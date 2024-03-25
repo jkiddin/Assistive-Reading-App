@@ -25,7 +25,7 @@ python3 main.py
 Add /api to the given url to access the data
 
 Front End
-
+Keep the backend server running, and open a split terminal.
 Navigate to the client folder in terminal, and run these commands.
 
 Step 5: Install Node (using Homebrew)
