@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { useState, useEffect } from 'react';
+import reactLogo from './assets/react.svg';
+import viteLogo from '/vite.svg';
 import axios from 'axios';
-import './App.css'
+import './App.css';
+import PDFViewer from './Dashboard'; // Import the PdfViewer component
 
 function App() {
   const [count, setCount] = useState(0);
@@ -11,11 +12,11 @@ function App() {
   const fetchAPI = async () => {
       const response = await axios.get("http://127.0.0.1:3001/api");
       console.log(response.data.group_members);
-      setMembers(response.data.group_members)
-  }
+      setMembers(response.data.group_members);
+  };
 
   useEffect(() => {
-    fetchAPI()
+    fetchAPI();
   }, []);
 
   return (
@@ -42,8 +43,12 @@ function App() {
           </ol>
         </div>
       </div>
+
+      {/* Here's where the PDF Viewer component is used in the app */}
+      <PDFViewer />
     </>
-  )
+  );
 }
 
-export default App
+export default App;
+

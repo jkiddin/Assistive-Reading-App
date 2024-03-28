@@ -29,3 +29,8 @@ npm install vite --save-dev
 Step 7: Launch the frontend
 npm run dev
 Click on the given link
+
+# Everything installed after
+npm install pdfjs-dist
+npm install @react-pdf/renderer
+npm install react-router-do
