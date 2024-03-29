@@ -3,7 +3,6 @@ import reactLogo from './assets/react.svg';
 import viteLogo from '/vite.svg';
 import axios from 'axios';
 import './App.css';
-import PDFViewer from './Dashboard'; // Import the PdfViewer component
 
 function App() {
   const [count, setCount] = useState(0);
@@ -43,9 +42,6 @@ function App() {
           </ol>
         </div>
       </div>
-
-      {/* Here's where the PDF Viewer component is used in the app */}
-      <PDFViewer />
     </>
   );
 }

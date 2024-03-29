@@ -46,4 +46,4 @@ Click on the given link
 # Everything installed after
 npm install pdfjs-dist
 npm install @react-pdf/renderer
-npm install react-router-do
+npm install react-router-dom
