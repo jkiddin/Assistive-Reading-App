@@ -51,3 +51,5 @@ npm install react-router-dom
 name a pdf AppTest.pdf on your computer
 upload this file on frontend by adding /dashboard to URL
 view this file on frontend by adding /reader to URL
+
+The server/venv files and any node_modules files should not be committed to Github, as well as any test pdfs.
