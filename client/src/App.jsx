@@ -9,7 +9,7 @@ function App() {
   const [members, setMembers] = useState([]);
 
   const fetchAPI = async () => {
-      const response = await axios.get("http://127.0.0.1:3001/api");
+      const response = await axios.get("http://127.0.0.1:3001/");
       console.log(response.data.group_members);
       setMembers(response.data.group_members);
   };

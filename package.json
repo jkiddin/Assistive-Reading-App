@@ -1,0 +1,8 @@
+{
+    "dependencies": {
+      "@react-pdf/renderer": "^3.4.2",
+      "axios": "^1.6.8",
+      "react-pdf": "^7.7.1"
+    }
+  }
+  
