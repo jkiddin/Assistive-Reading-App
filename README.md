@@ -47,3 +47,7 @@ Click on the given link
 npm install pdfjs-dist
 npm install @react-pdf/renderer
 npm install react-router-dom
+
+name a pdf AppTest.pdf on your computer
+upload this file on frontend by adding /dashboard to URL
+view this file on frontend by adding /reader to URL
