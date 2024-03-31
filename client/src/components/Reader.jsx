@@ -40,6 +40,18 @@ function Reader() {
     // Function to go to the next page
     const goToNextPage = useCallback(() => setPageNumber(prevPage => prevPage + 1), []);
 
+    const onRenderSuccess = useCallback((page) => {
+        page.getTextContent().then((textContent) => {
+          // Log the structure of textContent to the console
+          console.log('Text content object:', textContent);
+          
+          const textItems = textContent.items;
+          if (textItems && Array.isArray(textItems)) {
+            const pageText = textItems.map(item => item.str).join(' ');
+            console.log(pageText);
+          }
+        });
+      }, []);
     return (
         <div>
             {file && (
@@ -47,7 +59,9 @@ function Reader() {
                     file={file}
                     onLoadSuccess={onDocumentLoadSuccess}
                 >
-                    <Page pageNumber={pageNumber} /> {/* Render the current page */}
+                    <Page pageNumber={pageNumber} 
+                    onRenderSuccess={onRenderSuccess} // Called when the page is rendered
+                    /> 
                 </Document>
             )}
             {numPages && (
