@@ -3,6 +3,7 @@ from flask import send_from_directory
 from flask_cors import CORS
 from werkzeug.utils import safe_join, secure_filename
 import tempfile
+import json
 import os
 import base64
 
@@ -25,6 +26,17 @@ def group_names():
     )
 
 PDF_STORAGE_FOLDER = './database'
+METADATA_FILE = './database/metadata.json'
+
+def read_metadata():
+    if not os.path.isfile(METADATA_FILE):
+        return []
+    with open(METADATA_FILE, 'r') as file:
+        return json.load(file)
+
+def write_metadata(metadata):
+    with open(METADATA_FILE, 'w') as file:
+        json.dump(metadata, file, indent=2)
 
 @app.route('/upload-files', methods=['POST'])
 def upload_file():
@@ -48,11 +60,17 @@ def upload_file():
         # Save the file to the designated directory
         file.save(file_path)
 
+        # Update the metadata JSON file
+        metadata = read_metadata()
+        print(metadata)
+        metadata.append({'title': title, 'filename': filename})
+        write_metadata(metadata)
+
         print("Received POST request")  # Log that a POST request was received
         print(f"File {filename} saved successfully in {PDF_STORAGE_FOLDER}")  # Log saved file
 
         # Respond with the status, title, and filename
-        return jsonify({'status': 'ok', 'title': title, 'filename': filename})
+        return jsonify({'status': 'ok', 'title': title, 'filename': filename}) 
 
 # Get uploaded file   
 @app.route('/pdf/<filename>', methods=['GET'])
@@ -68,6 +86,19 @@ def get_pdf(filename):
         return send_from_directory(PDF_STORAGE_FOLDER, secure_filename_path, as_attachment=True)
     except FileNotFoundError:
         return jsonify({'error': 'File not found'}), 404
+    
+# Get list of files
+@app.route('/get-files', methods=['GET'])
+def get_files():
+    # Check if the metadata file exists
+    if not os.path.exists(METADATA_FILE):
+        return jsonify([]), 200  # Return an empty list if the file does not exist
+
+    # Read the contents of the metadata file
+    with open(METADATA_FILE, 'r') as file:
+        metadata = json.load(file)
+        return jsonify(metadata), 200  # Return the contents of the metadata file as JSON
+
 
 
 if __name__ == '__main__':
