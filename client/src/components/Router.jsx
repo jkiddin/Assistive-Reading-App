@@ -20,7 +20,7 @@ const Router = () => {
             path: "login",
         },
         {
-            path: "reader/:fileName",
+            path: "reader/:title",
             element: <Reader> </Reader>
         }
     ]);

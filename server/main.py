@@ -46,46 +46,41 @@ def upload_file():
     file = request.files['file']
     title = request.form.get('title', 'Untitled')  # Default title to 'Untitled' if not provided
 
-    # Check if a file was selected
     if file.filename == '':
         return jsonify({'status': 'No selected file'})
 
     if file:
-        # Secure the filename to ensure it's safe to use in file system paths
         filename = secure_filename(file.filename)
-        
-        # Generate the full file path
         file_path = os.path.join(PDF_STORAGE_FOLDER, filename)
-        
-        # Save the file to the designated directory
         file.save(file_path)
 
-        # Update the metadata JSON file
         metadata = read_metadata()
-        print(metadata)
-        metadata.append({'title': title, 'filename': filename})
+        metadata[title] = filename
         write_metadata(metadata)
 
-        print("Received POST request")  # Log that a POST request was received
-        print(f"File {filename} saved successfully in {PDF_STORAGE_FOLDER}")  # Log saved file
+        return jsonify({'status': 'ok', 'title': title, 'filename': filename})
 
-        # Respond with the status, title, and filename
-        return jsonify({'status': 'ok', 'title': title, 'filename': filename}) 
+@app.route('/pdf/<title>', methods=['GET'])
+def get_pdf_by_title(title):
+    metadata = read_metadata()
 
-# Get uploaded file   
-@app.route('/pdf/<filename>', methods=['GET'])
-def get_pdf(filename):
-    # Secure the filename 
+    filename = metadata.get(title)
+
+    if not filename:
+        return jsonify({'error': 'Title not found'}), 404
+
     secure_filename_path = secure_filename(filename)
 
     try:
-        # Construct a secure file path and verify the file exists
-        file_path = safe_join(PDF_STORAGE_FOLDER, secure_filename_path)
-        
-        # Send the file if it exists
+        # Ensure the file exists
+        if not os.path.exists(safe_join(PDF_STORAGE_FOLDER, secure_filename_path)):
+            raise FileNotFoundError
+
+        # Send the file
         return send_from_directory(PDF_STORAGE_FOLDER, secure_filename_path, as_attachment=True)
     except FileNotFoundError:
         return jsonify({'error': 'File not found'}), 404
+
     
 # Get list of files
 @app.route('/get-files', methods=['GET'])

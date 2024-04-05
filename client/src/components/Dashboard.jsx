@@ -6,14 +6,12 @@ function Dashboard() {
   const [showPopup, setShowPopup] = useState(false);
   const [title, setTitle] = useState('');
   const [file, setFile] = useState(null); // Initialize file state as null
-  const [fileArray, setFileArray] = useState([]);
+  const [fileDict, setFileDict] = useState({});
 
   const navigate = useNavigate();
 
-  const handleReadDocument = (fileName) => {
-    // console.log(fileArray);
-    // console.log(fileName);
-    navigate(`/reader/${encodeURIComponent(fileName)}`);
+  const handleReadDocument = (title) => {
+    navigate(`/reader/${encodeURIComponent(title)}`);
   };
 
   
@@ -41,7 +39,7 @@ function Dashboard() {
     try {
       // Make a GET request to your backend to fetch the files
       const response = await axios.get('http://localhost:3001/get-files');
-      setFileArray(response.data);
+      setFileDict(response.data);
     } catch (error) {
       console.error('Error fetching files:', error);
     }
@@ -92,11 +90,11 @@ function Dashboard() {
       )}
       {/* Render a colored, rounded div for each document */}
       <div style={{ marginTop: '20px' }}>
-        {fileArray.map((file, index) => (
+        {Object.entries(fileDict).map(([title, fileName], index) => (
           <div key={index} style={{ /* styling code */ }}>
-            <span>{file.title}</span>
+            <span>{title}</span>
             <button 
-              onClick={() => handleReadDocument(file.fileName)}
+              onClick={() => handleReadDocument(title)}
               style={{ /* styling code for button */ }}
             >
               Read Document
