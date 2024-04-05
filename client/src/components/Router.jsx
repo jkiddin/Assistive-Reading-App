@@ -20,8 +20,8 @@ const Router = () => {
             path: "login",
         },
         {
-            path: "reader",
-            element: <Reader></Reader>
+            path: "reader/:fileName",
+            element: <Reader> </Reader>
         }
     ]);
     return <RouterProvider router = {router} />

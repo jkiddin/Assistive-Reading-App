@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios'; 
 
 function Dashboard() {
@@ -7,6 +8,19 @@ function Dashboard() {
   const [file, setFile] = useState(null); // Initialize file state as null
   const [fileArray, setFileArray] = useState([]);
 
+  const navigate = useNavigate();
+
+  const handleReadDocument = (fileName) => {
+    // console.log(fileArray);
+    // console.log(fileName);
+    navigate(`/reader/${encodeURIComponent(fileName)}`);
+  };
+
+  
+  useEffect(() => {
+    fetchFiles();
+  }, []);
+  
   const showUploadPopup = () => {
     setShowPopup(true);
   };
@@ -32,11 +46,6 @@ function Dashboard() {
       console.error('Error fetching files:', error);
     }
   };
-
-  useEffect(() => {
-    fetchFiles();
-  }, []);
-  
   
 
   // Function to handle the form submission and send the POST request
@@ -84,26 +93,14 @@ function Dashboard() {
       {/* Render a colored, rounded div for each document */}
       <div style={{ marginTop: '20px' }}>
         {fileArray.map((file, index) => (
-          <div key={index} style={{
-            backgroundColor: '#f0f0f0', // Light grey background
-            borderRadius: '10px', // Rounded corners
-            padding: '10px 200px',
-            margin: '10px 0', // Margin for top and bottom
-            color: '#333', // Text color
-            display: 'flex',
-            justifyContent: 'space-between', // Space out the title and any buttons or icons you might add later
-            alignItems: 'center',
-            width: '100%' // Make divs stretch to full container width
-          }}>
+          <div key={index} style={{ /* styling code */ }}>
             <span>{file.title}</span>
-            {/* Add a "Read Document" button */}
-            <button style={{
-              padding: '5px 10px', // Add some padding
-              borderRadius: '5px', // Slightly rounded corners
-              cursor: 'pointer', // Change cursor on hover
-              backgroundColor: '#F5F5DC',
-              border: 'none' // Remove default button border
-            }}>Read Document</button>
+            <button 
+              onClick={() => handleReadDocument(file.fileName)}
+              style={{ /* styling code for button */ }}
+            >
+              Read Document
+            </button>
           </div>
         ))}
       </div>

@@ -3,10 +3,12 @@ import axios from 'axios';
 import { Document, Page, pdfjs } from 'react-pdf';
 import 'react-pdf/dist/esm/Page/TextLayer.css'
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css'
+import { useParams } from 'react-router-dom';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
 function Reader() {
+    const { fileName } = useParams();
     const [file, setFile] = useState(null);
     const [numPages, setNumPages] = useState(null);
     const [pageNumber, setPageNumber] = useState(1); 
@@ -17,7 +19,8 @@ function Reader() {
 
     const fetchAPI = useCallback(async () => {
         try {
-            const response = await axios.get("http://127.0.0.1:3001/pdf/AppTest.pdf", {
+            console.log(fileName);
+            const response = await axios.get(`http://127.0.0.1:3001/pdf/${decodeURIComponent(fileName)}`, {
                 responseType: 'blob',
                 withCredentials: true
             });
@@ -28,7 +31,7 @@ function Reader() {
         } catch (error) {
             console.error("Error fetching the PDF: ", error);
         }
-    }, []);
+    }, [fileName]);
 
     useEffect(() => {
         fetchAPI(); // Fetch PDF upon component mount
