@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import reactLogo from '../assets/react.svg';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import '../styles/App.css';
 
@@ -19,6 +20,9 @@ function App() {
 
   return (
     <>
+    <div className="header">
+    <Link to="/dashboard" className="dashboard-button">Dashboard</Link>
+    </div>
       <div>
         <a href="https://vitejs.dev" target="_blank">
         </a>

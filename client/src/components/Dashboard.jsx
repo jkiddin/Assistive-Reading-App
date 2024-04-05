@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios'; 
 
 function Dashboard() {
@@ -73,6 +73,9 @@ function Dashboard() {
 
   return (
     <div>
+       <div className="header">
+    <Link to="/" className="home-button">App</Link>
+    </div>
       <button onClick={showUploadPopup}>Upload Document</button>
       {showPopup && (
         <div className="upload-popup">

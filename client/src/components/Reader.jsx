@@ -4,6 +4,7 @@ import { Document, Page, pdfjs } from 'react-pdf';
 import 'react-pdf/dist/esm/Page/TextLayer.css'
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css'
 import { useParams } from 'react-router-dom';
+import {  Link } from 'react-router-dom';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
@@ -57,6 +58,12 @@ function Reader() {
       }, []);
     return (
         <div>
+            <div className="header">
+                <Link to="/" className="home-button">App</Link>
+            </div>
+            <div className="header">
+                <Link to="/dashboard" className="dashboard-button">Dashboard</Link>
+            </div>
             {file && (
                 <Document
                     file={file}

@@ -87,7 +87,7 @@ def get_pdf_by_title(title):
 def get_files():
     # Check if the metadata file exists
     if not os.path.exists(METADATA_FILE):
-        return jsonify([]), 200  # Return an empty list if the file does not exist
+        return jsonify({}), 200  # Return an empty dictionary
 
     # Read the contents of the metadata file
     with open(METADATA_FILE, 'r') as file:

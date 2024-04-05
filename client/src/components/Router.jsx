@@ -24,6 +24,8 @@ const Router = () => {
             element: <Reader> </Reader>
         }
     ]);
-    return <RouterProvider router = {router} />
+    return <RouterProvider 
+    router = {router} 
+    />
 };
 export default Router;
