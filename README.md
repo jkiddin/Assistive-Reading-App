@@ -22,8 +22,6 @@ Step 4: Launch the backend server
 
 python3 main.py
 
-Add /api to the given url to access the data
-
 Front End
 
 Keep the backend server running, and open a split terminal.
@@ -45,7 +43,7 @@ Click on the given link
 
 # Everything installed after
 npm install pdfjs-dist
-npm install @react-pdf/renderer
+npm install @react-pdf
 npm install react-router-dom
 
 name a pdf AppTest.pdf on your computer
