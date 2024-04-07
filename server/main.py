@@ -6,6 +6,7 @@ import tempfile
 import json
 import os
 import base64
+from simplification import process_pdf
 
 
 app = Flask(__name__)
@@ -30,7 +31,7 @@ METADATA_FILE = './database/metadata.json'
 
 def read_metadata():
     if not os.path.isfile(METADATA_FILE):
-        return []
+        return {}
     with open(METADATA_FILE, 'r') as file:
         return json.load(file)
 
@@ -53,7 +54,7 @@ def upload_file():
         filename = secure_filename(file.filename)
         file_path = os.path.join(PDF_STORAGE_FOLDER, filename)
         file.save(file_path)
-
+        process_pdf(file_path)
         metadata = read_metadata()
         metadata[title] = filename
         write_metadata(metadata)

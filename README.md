@@ -45,8 +45,14 @@ Click on the given link
 
 # Everything installed after
 npm install pdfjs-dist
-npm install @react-pdf/renderer
+npm install react-pdf
 npm install react-router-dom
+pip install PyPDF2
+pip install python-dotenv
+pip install openai
+pip install reportlab
+pip install pdfminer.six
+
 
 name a pdf AppTest.pdf on your computer
 upload this file on frontend by adding /dashboard to URL
