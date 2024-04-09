@@ -11,6 +11,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/$
 function Reader() {
     const { title } = useParams();
     const [file, setFile] = useState(null);
+    const [simplifiedFile, setSimplifiedFile] = useState(null);
     const [numPages, setNumPages] = useState(null);
     const [pageNumber, setPageNumber] = useState(1); 
 
@@ -18,25 +19,26 @@ function Reader() {
         setNumPages(numPages); // Set total number of pages
     }, []);
 
-    const fetchAPI = useCallback(async () => {
+    const fetchPDF = async (url, isSimplified = false) => {
         try {
-            console.log(title);
-            const response = await axios.get(`http://127.0.0.1:3001/pdf/${decodeURIComponent(title)}`, {
+            const response = await axios.get(url, {
                 responseType: 'blob',
                 withCredentials: true
             });
-            
-            // Create a URL for the PDF Blob and update state
             const fileURL = URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
-            setFile(fileURL);
+            isSimplified ? setSimplifiedFile(fileURL) : setFile(fileURL);
         } catch (error) {
             console.error("Error fetching the PDF: ", error);
         }
-    }, [title]);
+    };
 
     useEffect(() => {
-        fetchAPI(); // Fetch PDF upon component mount
-    }, []);
+        const encodedTitle = decodeURIComponent(title);
+        // Fetch original PDF
+        fetchPDF(`http://127.0.0.1:3001/pdf/${encodedTitle}`);
+        // Fetch simplified PDF
+        fetchPDF(`http://127.0.0.1:3001/pdf/${encodedTitle}_simplified`, true);
+    }, [title]);
 
     // Function to go to the previous page
     const goToPrevPage = useCallback(() => setPageNumber(prevPage => prevPage - 1), []);
@@ -64,16 +66,22 @@ function Reader() {
             <div className="header">
                 <Link to="/dashboard" className="dashboard-button">Dashboard</Link>
             </div>
-            {file && (
-                <Document
-                    file={file}
-                    onLoadSuccess={onDocumentLoadSuccess}
-                >
-                    <Page pageNumber={pageNumber} 
-                    onRenderSuccess={onRenderSuccess} // Called when the page is rendered
-                    /> 
-                </Document>
-            )}
+            <div className="pdf-viewer" style={{ display: 'flex', justifyContent: 'space-around', alignItems: 'center' }}>
+                <div>
+                    {file && (
+                        <Document file={file} onLoadSuccess={onDocumentLoadSuccess}>
+                            <Page pageNumber={pageNumber} />
+                        </Document>
+                    )}
+                </div>
+                <div>
+                    {simplifiedFile && (
+                        <Document file={simplifiedFile} onLoadSuccess={onDocumentLoadSuccess}>
+                            <Page pageNumber={pageNumber} />
+                        </Document>
+                    )}
+                </div>
+            </div>
             {numPages && (
                 <div className="pagination">
                     <button onClick={goToPrevPage} disabled={pageNumber <= 1}>

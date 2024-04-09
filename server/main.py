@@ -64,20 +64,24 @@ def upload_file():
 @app.route('/pdf/<title>', methods=['GET'])
 def get_pdf_by_title(title):
     metadata = read_metadata()
+    
+    # Determine if the request is for a simplified version based on the title
+    is_simplified = title.endswith('_simplified')
+    if is_simplified:
+        title = title[:-11]  # Remove '_simplified' from the end
 
     filename = metadata.get(title)
-
     if not filename:
         return jsonify({'error': 'Title not found'}), 404
+    
+    # Add '_simplified' to the filename for simplified versions
+    if is_simplified:
+        filename = f"{os.path.splitext(filename)[0]}_simplified.pdf"
 
     secure_filename_path = secure_filename(filename)
-
     try:
-        # Ensure the file exists
         if not os.path.exists(safe_join(PDF_STORAGE_FOLDER, secure_filename_path)):
             raise FileNotFoundError
-
-        # Send the file
         return send_from_directory(PDF_STORAGE_FOLDER, secure_filename_path, as_attachment=True)
     except FileNotFoundError:
         return jsonify({'error': 'File not found'}), 404
