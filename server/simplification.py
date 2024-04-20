@@ -25,16 +25,15 @@ def simplify_text(text):
             messages=[
                 {
                     "role": "system",
-                    "content": "You are a helpful assistant."
+                    "content": "You are a helpful assistant trained to translate complex texts into simpler language without reducing the amount of text. Your goal is to rephrase the text using simpler words and sentence structures while keeping the length and overall structure similar to the original. This should make the content understandable for an eighth-grade reading level without summarizing or omitting any details."
                 },
                 {
                     "role": "user",
-                    "content": (f"Please rewrite the following text in simple language suitable "
-                                f"for an eighth grader and format the text into well-structured paragraphs "
-                                f"where you see fit:\n\n{text}")
+                    "content": (f"Please rephrase the following text into simpler language appropriate for an eighth grader. Keep the total number of words and the paragraph structure as close as possible to the original. Your task is not to summarize but to translate each sentence to be easier to understand, while maintaining the original story's integrity:\n\n{text}")
                 }
             ]
         )
+
         # Access the first choice and its message content directly using attributes
         simplified_text = chat_completion.choices[0].message.content.strip()
 
