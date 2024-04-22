@@ -6,7 +6,7 @@ import tempfile
 import json
 import os
 import base64
-from simplification import process_pdf
+from simplification import simplify_pdf
 
 
 app = Flask(__name__)
@@ -43,23 +43,34 @@ def write_metadata(metadata):
 def upload_file():
     if 'file' not in request.files:
         return jsonify({'status': 'No file part'})
-
     file = request.files['file']
     title = request.form.get('title', 'Untitled')  # Default title to 'Untitled' if not provided
-
     if file.filename == '':
         return jsonify({'status': 'No selected file'})
-
     if file:
+        
         filename = secure_filename(file.filename)
         file_path = os.path.join(PDF_STORAGE_FOLDER, filename)
         file.save(file_path)
-        process_pdf(file_path)
         metadata = read_metadata()
         metadata[title] = filename
         write_metadata(metadata)
-
         return jsonify({'status': 'ok', 'title': title, 'filename': filename})
+
+
+@app.route('/process-pdf', methods=['POST'])
+def process_pdf():
+    data = request.json
+    filename = data.get('filename')
+    title = data.get('title')
+
+    file_path = os.path.join(PDF_STORAGE_FOLDER, filename)
+ 
+    # Call the processing function with both file_path and output_path
+    simplify_pdf(file_path)
+
+    return jsonify({'status': 'Processing started', 'title': title}), 202
+
 
 @app.route('/pdf/<title>', methods=['GET'])
 def get_pdf_by_title(title):

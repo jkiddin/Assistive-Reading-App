@@ -44,7 +44,7 @@ def simplify_text(text):
         return text
 
 
-def process_pdf(pdf_path):
+def simplify_pdf(pdf_path):
     # Open the original PDF file with PyPDF2 to count the pages
     with open(pdf_path, 'rb') as file:
         pdf_reader = PyPDF2.PdfReader(file)

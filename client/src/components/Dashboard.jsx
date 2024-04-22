@@ -44,33 +44,41 @@ function Dashboard() {
       console.error('Error fetching files:', error);
     }
   };
-  
 
-  // Function to handle the form submission and send the POST request
   const handleSubmit = async () => {
     if (!file || !title) {
-      alert('Please fill in all fields.');
-      return;
+        alert('Please fill in all fields.');
+        return;
     }
 
     const formData = new FormData();
     formData.append('title', title);
     formData.append('file', file);
 
+    // First, upload the file and update metadata
     try {
-      const response = await axios.post(
-        'http://localhost:3001/upload-files', 
-        formData,
-        { headers: { 'Content-Type': 'multipart/form-data' } }
-      );
-      console.log(response.data); 
-      closePopup(); 
+        const uploadResponse = await axios.post(
+            'http://localhost:3001/upload-files', 
+            formData,
+            { headers: { 'Content-Type': 'multipart/form-data' } }
+        );
+        console.log(uploadResponse.data);
+        
+        // If upload is successful, proceed to process the PDF
+        if (uploadResponse.status === 200) {
+          closePopup(); 
+          fetchFiles();
+            const processResponse = await axios.post(
+                'http://localhost:3001/process-pdf', 
+                { filename: uploadResponse.data.filename, title: title }
+            );
+            console.log(processResponse.data);
+        }
     } catch (error) {
-      console.error('Error uploading document:', error);
+        console.error('Error handling document:', error);
     }
-    fetchFiles();
-  };
-
+};
+  
   return (
     <div>
        <div className="header">
