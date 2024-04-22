@@ -7,9 +7,12 @@ import json
 import os
 import base64
 from simplification import simplify_pdf
+from pdfminer.high_level import extract_text
 
 
 app = Flask(__name__)
+simplifying_docs = {}
+
 CORS(app, supports_credentials=True, origins="http://localhost:5173")# change later
 
 app.secret_key = os.environ.get('SECRET_KEY', 'default_key_for_development')
@@ -97,6 +100,34 @@ def get_pdf_by_title(title):
     except FileNotFoundError:
         return jsonify({'error': 'File not found'}), 404
 
+@app.route('/pdf/<title>/<int:page>', methods=['GET'])
+def get_simplified_pdf_page(title, page):
+    
+    metadata = read_metadata()
+    filename = metadata.get(title)
+
+    if not filename:
+        return jsonify({'error': 'Title not found'}), 404
+    
+    filename = f"{os.path.splitext(filename)[0]}_simplified.pdf"
+    
+    
+    secure_filename_path = secure_filename(filename)
+    secure_filename_path = safe_join(PDF_STORAGE_FOLDER, secure_filename_path)
+
+    try:
+        print(secure_filename_path)
+        # pdfminer's extract_text function can take page numbers as a list of zero-indexed integers
+        extracted_text = extract_text(secure_filename_path, page_numbers=[page-1])  # page_number is 1-based, adjust for zero-based index
+        single_newline_fixed_text = extracted_text.replace('\n', ' ')
+        # Then split on double spaces if single newlines were used as spaces
+        paragraphs = single_newline_fixed_text.split('  ')  # Two spaces
+        # If you're certain that paragraphs are split with '\n\n', then you can directly split by double newlines.
+        # paragraphs = extracted_text.split('\n\n')
+        return jsonify(paragraphs)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
     
 # Get list of files
 @app.route('/get-files', methods=['GET'])
@@ -109,8 +140,7 @@ def get_files():
     with open(METADATA_FILE, 'r') as file:
         metadata = json.load(file)
         return jsonify(metadata), 200  # Return the contents of the metadata file as JSON
-
-
+    
 
 if __name__ == '__main__':
     app.run(debug=True, port=3001)  
