@@ -6,11 +6,12 @@ import tempfile
 import json
 import os
 import base64
-from simplification import simplify_pdf
+from simplification import simplify_pdf, simplify_text
 from pdfminer.high_level import extract_text
 
 
 app = Flask(__name__)
+simplified_cache = {}
 simplifying_docs = {}
 
 CORS(app, supports_credentials=True, origins="http://localhost:5173")# change later
@@ -104,30 +105,40 @@ def get_pdf_by_title(title):
 def get_simplified_pdf_page(title, page):
     
     metadata = read_metadata()
-    filename = metadata.get(title)
+    og_filename = metadata.get(title)
 
-    if not filename:
+    if not og_filename:
         return jsonify({'error': 'Title not found'}), 404
     
-    filename = f"{os.path.splitext(filename)[0]}_simplified.pdf"
+    filename = f"{os.path.splitext(og_filename)[0]}_simplified.pdf"
     
     
     secure_filename_path = secure_filename(filename)
     secure_filename_path = safe_join(PDF_STORAGE_FOLDER, secure_filename_path)
 
-    try:
-        print(secure_filename_path)
-        # pdfminer's extract_text function can take page numbers as a list of zero-indexed integers
-        extracted_text = extract_text(secure_filename_path, page_numbers=[page-1])  # page_number is 1-based, adjust for zero-based index
-        single_newline_fixed_text = extracted_text.replace('\n', ' ')
-        # Then split on double spaces if single newlines were used as spaces
+    if os.path.exists(secure_filename_path):
+        try:
+            print(secure_filename_path)
+            # pdfminer's extract_text function can take page numbers as a list of zero-indexed integers
+            extracted_text = extract_text(secure_filename_path, page_numbers=[page-1])  # page_number is 1-based, adjust for zero-based index
+            single_newline_fixed_text = extracted_text.replace('\n', ' ')
+            paragraphs = single_newline_fixed_text.split('  ')  # Two spaces
+            print("hello") 
+            
+            
+            return jsonify(paragraphs)
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+    else:
+        secure_filename_path = secure_filename(og_filename)
+        secure_filename_path = safe_join(PDF_STORAGE_FOLDER, secure_filename_path)
+        extracted_text = extract_text(secure_filename_path, page_numbers=[page-1])
+        simplified_text = simplify_text(extracted_text)
+        simplified_cache[title][page-1] = simplified_text
+        single_newline_fixed_text = simplified_text.replace('\n', ' ')
         paragraphs = single_newline_fixed_text.split('  ')  # Two spaces
-        # If you're certain that paragraphs are split with '\n\n', then you can directly split by double newlines.
-        # paragraphs = extracted_text.split('\n\n')
         return jsonify(paragraphs)
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-    
+
     
 # Get list of files
 @app.route('/get-files', methods=['GET'])
