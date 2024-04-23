@@ -14,6 +14,17 @@ function Dashboard() {
     navigate(`/reader/${encodeURIComponent(title)}`);
   };
 
+  const deleteDocument = async (title) => {
+    try {
+        const response = await axios.delete(`http://localhost:3001/delete-document/${encodeURIComponent(title)}`);
+        console.log(response.data);
+        alert('Document deleted successfully!');
+        await fetchFiles();  // Await ensures fetchFiles completes before moving on, if fetchFiles is also async
+    } catch (error) {
+        console.error('Error deleting the document:', error);
+        alert('Failed to delete the document.');
+    }
+}
   
   useEffect(() => {
     fetchFiles();
@@ -39,7 +50,8 @@ function Dashboard() {
     try {
       // Make a GET request to your backend to fetch the files
       const response = await axios.get('http://localhost:3001/get-files');
-      setFileDict(response.data);
+      console.log(response.data);
+      setFileDict({ ...response.data });
     } catch (error) {
       console.error('Error fetching files:', error);
     }
@@ -108,7 +120,13 @@ function Dashboard() {
               onClick={() => handleReadDocument(title)}
               style={{ /* styling code for button */ }}
             >
-              Read Document
+            Read Document
+            </button>
+            <button 
+              onClick={() => deleteDocument(title)}
+              style={{ /* styling code for button */ }}
+            >
+            Delete Document
             </button>
           </div>
         ))}

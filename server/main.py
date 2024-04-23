@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request, session
+from flask import Flask, jsonify, request, make_response
 from flask import send_from_directory
 from flask_cors import CORS
 from werkzeug.utils import safe_join, secure_filename
@@ -42,6 +42,7 @@ def read_metadata():
 def write_metadata(metadata):
     with open(METADATA_FILE, 'w') as file:
         json.dump(metadata, file, indent=2)
+
 
 @app.route('/upload-files', methods=['POST'])
 def upload_file():
@@ -118,12 +119,10 @@ def get_simplified_pdf_page(title, page):
 
     if os.path.exists(secure_filename_path):
         try:
-            print(secure_filename_path)
             # pdfminer's extract_text function can take page numbers as a list of zero-indexed integers
             extracted_text = extract_text(secure_filename_path, page_numbers=[page-1])  # page_number is 1-based, adjust for zero-based index
             single_newline_fixed_text = extracted_text.replace('\n', ' ')
             paragraphs = single_newline_fixed_text.split('  ')  # Two spaces
-            print("hello") 
             
             
             return jsonify(paragraphs)
@@ -134,7 +133,7 @@ def get_simplified_pdf_page(title, page):
         secure_filename_path = safe_join(PDF_STORAGE_FOLDER, secure_filename_path)
         extracted_text = extract_text(secure_filename_path, page_numbers=[page-1])
         simplified_text = simplify_text(extracted_text)
-        simplified_cache[title][page-1] = simplified_text
+        # simplified_cache[title][page-1] = simplified_text // need to check if title exists first
         single_newline_fixed_text = simplified_text.replace('\n', ' ')
         paragraphs = single_newline_fixed_text.split('  ')  # Two spaces
         return jsonify(paragraphs)
@@ -143,14 +142,39 @@ def get_simplified_pdf_page(title, page):
 # Get list of files
 @app.route('/get-files', methods=['GET'])
 def get_files():
-    # Check if the metadata file exists
     if not os.path.exists(METADATA_FILE):
-        return jsonify({}), 200  # Return an empty dictionary
+        response = make_response(jsonify({}), 200)
+    else:
+        with open(METADATA_FILE, 'r') as file:
+            metadata = json.load(file)
+        response = make_response(jsonify(metadata), 200)
+    
+    return response
+    
+@app.route('/delete-document/<title>', methods=['DELETE'])
+def delete_document(title):
+    metadata = read_metadata()
+    og_filename = metadata.get(title)
 
-    # Read the contents of the metadata file
-    with open(METADATA_FILE, 'r') as file:
-        metadata = json.load(file)
-        return jsonify(metadata), 200  # Return the contents of the metadata file as JSON
+    
+    if og_filename:
+        del metadata[title]
+        write_metadata(metadata)
+
+    secure_filename_path = secure_filename(og_filename)
+    secure_filename_path = safe_join(PDF_STORAGE_FOLDER, secure_filename_path)
+
+    if os.path.exists(secure_filename_path):
+        os.remove(secure_filename_path)
+    
+    simp_filename = f"{os.path.splitext(og_filename)[0]}_simplified.pdf"
+    secure_filename_path = secure_filename(simp_filename)
+    secure_filename_path = safe_join(PDF_STORAGE_FOLDER, secure_filename_path)
+
+    if os.path.exists(secure_filename_path):
+        os.remove(secure_filename_path)
+
+    return jsonify({"message": "Document deleted successfully", "title": title}), 200
     
 
 if __name__ == '__main__':

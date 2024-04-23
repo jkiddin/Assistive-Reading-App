@@ -53,6 +53,9 @@ pip install openai
 pip install reportlab
 pip install pdfminer.six
 
+# New Update!
+npm install jspdf
+
 
 name a pdf AppTest.pdf on your computer
 upload this file on frontend by adding /dashboard to URL
