@@ -2,13 +2,11 @@ import PyPDF2
 from openai import OpenAI
 import os
 from dotenv import load_dotenv
-from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
 import io
-from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.platypus import SimpleDocTemplate, Preformatted, PageBreak, Paragraph, Spacer
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.platypus import SimpleDocTemplate, PageBreak, Paragraph, Spacer
 from pdfminer.high_level import extract_text
-from pdfminer.layout import LAParams, LTTextBox, LTTextLine, LTChar
 
 # Load environment variables
 load_dotenv()

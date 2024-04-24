@@ -47,7 +47,7 @@ function Reader() {
             const doc = new jsPDF();
             doc.setFont('Helvetica'); // Set the font to Helvetica
             doc.setFontSize(12); 
-            let yPos = 40; // Vertical position for the first line of text
+            let yPos = 50; // Vertical position for the first line of text
             const margin = 10; // Margin for the sides
             const maxWidth = doc.internal.pageSize.getWidth() - 2 * margin; // Maximum width of text
         
@@ -63,7 +63,7 @@ function Reader() {
                 yPos += 10; // line height spacing
             });
 
-            yPos += 10; // paragraph spacing
+            yPos += 5; // paragraph spacing
             });
             // Generate a blob URL from the PDF
             const pdfBlob = doc.output('blob');
@@ -141,30 +141,18 @@ function Reader() {
     // return links and the pdf with simplification by its side
     return (
         <div>
-            <div className="header">
-                <Link to="/" className="home-button">App</Link>
-            </div>
-            <div className="header">
-                <Link to="/dashboard" className="dashboard-button">Dashboard</Link>
-            </div>
-            <div className="pdf-viewer" style={{ display: 'flex', justifyContent: 'space-around', alignItems: 'center' }}>
-                <div>
-                    {file && (
-                        <Document file={file} onLoadSuccess={onDocumentLoadSuccess}>
-                            <Page pageNumber={pageNumber} />
-                        </Document>
-                    )}
-                </div>
-                <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                    {simplifiedPage ? (
-                        <Document file={simplifiedPage}>
-                            <Page pageNumber={1} />
-                        </Document>
-                    ) : (
-                        <div>Loading...</div>  // Display this when simplifiedPage is null
-                    )}
-                </div>
-            </div>
+            <div className="header" style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-evenly',
+            marginTop: '-30px',           // Reduces top margin
+            marginBottom: '2px',     
+            backgroundColor: '#f5f5f5', // Light gray background
+            padding: '5px 0',        
+            width: '100%',            
+            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+        }}>
+            <Link to="/" className="home-button">App</Link>
             {numPages && (
                 <div className="pagination">
                     <button onClick={goToPrevPage} disabled={pageNumber <= 1}>
@@ -176,6 +164,27 @@ function Reader() {
                     </button>
                 </div>
             )}
+            <Link to="/dashboard" className="dashboard-button">Dashboard</Link>
+        </div>
+            <div className="pdf-viewer" style={{ display: 'flex', justifyContent: 'space-around', alignItems: 'center' }}>
+                <div>
+                    {file && (
+                        <Document file={file} onLoadSuccess={onDocumentLoadSuccess}>
+                            <Page pageNumber={pageNumber} scale={0.75}/>
+                        </Document>
+                    )}
+                </div>
+                <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    {simplifiedPage ? (
+                        <Document file={simplifiedPage}>
+                            <Page pageNumber={1} scale={0.85}/>
+                        </Document>
+                    ) : (
+                        <div>Loading...</div>  // Display this when simplifiedPage is null
+                    )}
+                </div>
+            </div>
+            
         </div>
     );
 }

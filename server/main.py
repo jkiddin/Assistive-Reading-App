@@ -1,11 +1,9 @@
-from flask import Flask, jsonify, request, make_response
+from flask import Flask, jsonify, request
 from flask import send_from_directory
 from flask_cors import CORS
 from werkzeug.utils import safe_join, secure_filename
-import tempfile
 import json
 import os
-import base64
 from simplification import simplify_pdf, simplify_text
 from pdfminer.high_level import extract_text
 
