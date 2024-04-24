@@ -86,6 +86,7 @@ function Reader() {
 
     // fetch simplfied page only after page number has been loaded
     useEffect(() => {     
+        setSimplifiedPage(null);
         if (isLoaded){
             const encodedTitle = decodeURIComponent(title);
               // Fetch simplified PDF
@@ -130,7 +131,9 @@ function Reader() {
     
    
     // Function to go to the previous page
-    const goToPrevPage = useCallback(() => setPageNumber(prevPage => prevPage - 1), []);
+    const goToPrevPage = useCallback(() => 
+    setPageNumber(prevPage => prevPage - 1),
+     []);
 
     // Function to go to the next page
     const goToNextPage = useCallback(() => setPageNumber(prevPage => prevPage + 1), []);
@@ -152,15 +155,15 @@ function Reader() {
                         </Document>
                     )}
                 </div>
-                <div>
-                {simplifiedPage && (
-                   <Document
-                   file={simplifiedPage}  
-                 >
-                   <Page pageNumber={1} />
-                 </Document>
-                )}
-            </div>
+                <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    {simplifiedPage ? (
+                        <Document file={simplifiedPage}>
+                            <Page pageNumber={1} />
+                        </Document>
+                    ) : (
+                        <div>Loading...</div>  // Display this when simplifiedPage is null
+                    )}
+                </div>
             </div>
             {numPages && (
                 <div className="pagination">
