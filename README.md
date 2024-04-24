@@ -22,8 +22,6 @@ Step 4: Launch the backend server
 
 python3 main.py
 
-Add /api to the given url to access the data
-
 Front End
 
 Keep the backend server running, and open a split terminal.
@@ -46,6 +44,9 @@ Click on the given link
 # Everything installed after
 npm install pdfjs-dist
 npm install react-pdf
+
+npm install @react-pdf
+
 npm install react-router-dom
 pip install PyPDF2
 pip install python-dotenv
@@ -57,8 +58,4 @@ pip install pdfminer.six
 npm install jspdf
 
 
-name a pdf AppTest.pdf on your computer
-upload this file on frontend by adding /dashboard to URL
-view this file on frontend by adding /reader to URL
-
-The server/venv files and any node_modules files should not be committed to Github, as well as any test pdfs.
+The server/venv files and any node_modules files should not be committed to Github, as well as any test pdfs. Use git status to check before committing.
