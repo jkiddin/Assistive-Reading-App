@@ -49,7 +49,7 @@ def upload_file():
     if 'file' not in request.files:
         return jsonify({'status': 'No file part'})
     file = request.files['file']
-    title = request.form.get('title', 'Untitled')  # Default title to 'Untitled' if not provided
+    title = request.form.get('title')  
     if file.filename == '':
         return jsonify({'status': 'No selected file'})
     if file:
@@ -58,7 +58,10 @@ def upload_file():
         file_path = os.path.join(PDF_STORAGE_FOLDER, filename)
         file.save(file_path)
         metadata = read_metadata()
-        metadata[title] = filename
+        # comment
+        metadata[title] = {}
+        metadata[title]['filename'] = filename
+        metadata[title]['progress'] = 1
         write_metadata(metadata)
         return jsonify({'status': 'ok', 'title': title, 'filename': filename})
 
@@ -81,19 +84,11 @@ def process_pdf():
 def get_pdf_by_title(title):
     metadata = read_metadata()
     
-    # Determine if the request is for a simplified version based on the title
-    is_simplified = title.endswith('_simplified')
-    if is_simplified:
-        title = title[:-11]  # Remove '_simplified' from the end
-
-    filename = metadata.get(title)
+    # comment
+    filename = metadata.get(title, {}).get('filename') 
     if not filename:
         return jsonify({'error': 'Title not found'}), 404
     
-    # Add '_simplified' to the filename for simplified versions
-    if is_simplified:
-        filename = f"{os.path.splitext(filename)[0]}_simplified.pdf"
-
     secure_filename_path = secure_filename(filename)
     try:
         if not os.path.exists(safe_join(PDF_STORAGE_FOLDER, secure_filename_path)):
@@ -105,8 +100,10 @@ def get_pdf_by_title(title):
 @app.route('/pdf/<title>/<int:page>', methods=['GET'])
 def get_simplified_pdf_page(title, page):
     
+
     metadata = read_metadata()
-    og_filename = metadata.get(title)
+    #comment
+    og_filename = metadata.get(title, {}).get('filename') 
 
     if not og_filename:
         return jsonify({'error': 'Title not found'}), 404
@@ -142,19 +139,51 @@ def get_simplified_pdf_page(title, page):
 # Get list of files
 @app.route('/get-files', methods=['GET'])
 def get_files():
+    # Check if the metadata file exists
     if not os.path.exists(METADATA_FILE):
-        response = make_response(jsonify({}), 200)
-    else:
-        with open(METADATA_FILE, 'r') as file:
-            metadata = json.load(file)
-        response = make_response(jsonify(metadata), 200)
+        return jsonify({}), 200  # Return an empty dictionary
+
+    # Read the contents of the metadata file
+    with open(METADATA_FILE, 'r') as file:
+        metadata = json.load(file)
+        print(metadata)
     
-    return response
+    # Prepare a new dictionary that only includes the title and filename
+    filtered_metadata = {key: {'filename': value['filename']} for key, value in metadata.items() if 'filename' in value}
+
+    return jsonify(filtered_metadata), 200  # Return the filtered contents of the metadata file
     
+@app.route('/update-progress/<title>', methods=['POST'])
+def update_progress(title):
+    print("NO")
+    # This retrieves the current page number from the request's JSON body
+    page_number = request.json.get('page_number')
+    
+    # Assuming you are storing the progress in the same metadata.json
+    metadata = read_metadata()
+    print(metadata)
+    if title in metadata:
+        metadata[title]['progress'] = page_number
+    print(metadata)
+    write_metadata(metadata)
+    return jsonify({"message": "Progress updated successfully"}), 200
+
+@app.route('/get-progress/<title>', methods=['GET'])
+def get_progress(title):
+    """Retrieve the reading progress for a given document title."""
+    print("Woo")
+    metadata = read_metadata()
+    progress = metadata.get(title, {}).get('progress') 
+    print("Yes:" , progress)
+    if not progress:
+        return jsonify({"error": "Progress not found for the specified title"}), 404
+
+    return jsonify({"title": title, "progress": progress}), 200
+
 @app.route('/delete-document/<title>', methods=['DELETE'])
 def delete_document(title):
     metadata = read_metadata()
-    og_filename = metadata.get(title)
+    og_filename = metadata.get(title, {}).get('filename') 
 
     
     if og_filename:

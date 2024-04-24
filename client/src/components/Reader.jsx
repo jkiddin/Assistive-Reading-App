@@ -15,19 +15,20 @@ function Reader() {
     const [simplifiedPage, setSimplifiedPage] = useState(null);
     const [numPages, setNumPages] = useState(null);
     const [pageNumber, setPageNumber] = useState(1); 
+    const [isLoaded, setIsLoaded] = useState(false);
 
     const onDocumentLoadSuccess = useCallback(({ numPages }) => {
         setNumPages(numPages); // Set total number of pages
     }, []);
 
-    const fetchPDF = async (url, isSimplified = false) => {
+    const fetchPDF = async (url) => {
         try {
             const response = await axios.get(url, {
                 responseType: 'blob',
                 withCredentials: true
             });
             const fileURL = URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
-            isSimplified ? setSimplifiedFile(fileURL) : setFile(fileURL);
+            setFile(fileURL);
         } catch (error) {
             console.error("Error fetching the PDF: ", error);
         }
@@ -56,12 +57,7 @@ function Reader() {
             lines = lines.map(line => line.trim()); // Trim any potential extra whitespace from each line
 
             lines.forEach(line => {
-                // Ensure we don't write beyond the bottom of the page
-                if (yPos > doc.internal.pageSize.getHeight() - 10) {
-                console.warn('Not enough space for this line, text may be cut off.');
-                // Handle this situation, perhaps by creating a new page or truncating text
-                return;
-                }
+             
                 doc.text(line, margin, yPos);
                 yPos += 10; // Adjust line height spacing if needed
             });
@@ -88,15 +84,50 @@ function Reader() {
 
 
     useEffect(() => {
-        const encodedTitle = decodeURIComponent(title);
-       
-       // Fetch simplified PDF
-        fetchPage(`http://127.0.0.1:3001/pdf/${encodedTitle}/${pageNumber}`);
-    }, [title, pageNumber]);
+        
+        if (isLoaded){
+            const encodedTitle = decodeURIComponent(title);
+              // Fetch simplified PDF
+            fetchPage(`http://127.0.0.1:3001/pdf/${encodedTitle}/${pageNumber}`);
+        }
+        
     
-
+    }, [title, pageNumber, isLoaded]);
     
+    useEffect(() => {
+        const loadProgress = async () => {
+            try {
+                const response = await axios.get(`http://localhost:3001/get-progress/${encodeURIComponent(title)}`);
+                setPageNumber(response.data.progress || 1);
+                setIsLoaded(true);
+            } catch (error) {
+                console.error('Failed to load progress:', error);
+                setPageNumber(1);
+                setIsLoaded(true);
+            }
+        };
+        setIsLoaded(false);
+        loadProgress();
+    }, [title]);
 
+    useEffect(() => {
+        if (isLoaded) { 
+            const saveProgress = async () => {
+                try {
+                    await axios.post(`http://localhost:3001/update-progress/${encodeURIComponent(title)}`, {
+                        page_number: pageNumber
+                    });
+                } catch (error) {
+                    console.error('Failed to update progress:', error);
+                }
+            };
+        
+
+            saveProgress();
+        }
+    }, [pageNumber, title]);  // This useEffect runs every time pageNumber or title changes
+    
+   
     // Function to go to the previous page
     const goToPrevPage = useCallback(() => setPageNumber(prevPage => prevPage - 1), []);
 
