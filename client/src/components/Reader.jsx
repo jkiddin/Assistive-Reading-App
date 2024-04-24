@@ -142,30 +142,30 @@ function Reader() {
     return (
         <div>
             <div className="header" style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-evenly',
-            marginTop: '-30px',           // Reduces top margin
-            marginBottom: '2px',     
-            backgroundColor: '#f5f5f5', // Light gray background
-            padding: '5px 0',        
-            width: '100%',            
-            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-        }}>
-            <Link to="/" className="home-button">App</Link>
-            {numPages && (
-                <div className="pagination">
-                    <button onClick={goToPrevPage} disabled={pageNumber <= 1}>
-                        Prev
-                    </button>
-                    <span>Page {pageNumber} of {numPages}</span>
-                    <button onClick={goToNextPage} disabled={pageNumber >= numPages}>
-                        Next
-                    </button>
-                </div>
-            )}
-            <Link to="/dashboard" className="dashboard-button">Dashboard</Link>
-        </div>
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-evenly',
+                marginTop: '-30px',           // Reduces top margin
+                marginBottom: '2px',     
+                backgroundColor: '#f5f5f5', // Light gray background
+                padding: '5px 0',        
+                width: '100%',            
+                boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+            }}>
+                <Link to="/" className="home-button">App</Link>
+                {numPages && (
+                    <div className="pagination">
+                        <button onClick={goToPrevPage} disabled={pageNumber <= 1}>
+                            Prev
+                        </button>
+                        <span>Page {pageNumber} of {numPages}</span>
+                        <button onClick={goToNextPage} disabled={pageNumber >= numPages}>
+                            Next
+                        </button>
+                    </div>
+                )}
+                <Link to="/dashboard" className="dashboard-button">Dashboard</Link>
+            </div>
             <div className="pdf-viewer" style={{ display: 'flex', justifyContent: 'space-around', alignItems: 'center' }}>
                 <div>
                     {file && (
