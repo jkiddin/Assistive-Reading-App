@@ -43,7 +43,6 @@ Click on the given link
 
 # Everything installed after
 npm install pdfjs-dist
-npm install react-pdf
 
 npm install @react-pdf
 

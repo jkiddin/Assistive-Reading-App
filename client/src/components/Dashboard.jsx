@@ -3,33 +3,36 @@ import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios'; 
 
 function Dashboard() {
-  const [showPopup, setShowPopup] = useState(false);
-  const [title, setTitle] = useState('');
-  const [file, setFile] = useState(null); // Initialize file state as null
-  const [fileDict, setFileDict] = useState({});
+  const [showPopup, setShowPopup] = useState(false); // whether to display popup to add file
+  const [title, setTitle] = useState(''); // title of document to be added
+  const [file, setFile] = useState(null); // title of file to be added
+  const [fileDict, setFileDict] = useState({}); // dictionary of files to display
 
   const navigate = useNavigate();
 
+  // open link to read document
   const handleReadDocument = (title) => {
     navigate(`/reader/${encodeURIComponent(title)}`);
   };
 
+  // delete Document from list of books and fetch updated list
   const deleteDocument = async (title) => {
     try {
         const response = await axios.delete(`http://localhost:3001/delete-document/${encodeURIComponent(title)}`);
         console.log(response.data);
         alert('Document deleted successfully!');
-        await fetchFiles();  // Await ensures fetchFiles completes before moving on, if fetchFiles is also async
+        await fetchFiles();  
     } catch (error) {
         console.error('Error deleting the document:', error);
         alert('Failed to delete the document.');
     }
 }
   
+  // fetch list of files on Load
   useEffect(() => {
     fetchFiles();
   }, []);
-  
+
   const showUploadPopup = () => {
     setShowPopup(true);
   };
@@ -46,9 +49,9 @@ function Dashboard() {
     setFile(e.target.files[0]); // Set the selected file to state
   };
 
+  // retrieve list of files
   const fetchFiles = async () => {
     try {
-      // Make a GET request to your backend to fetch the files
       const response = await axios.get('http://localhost:3001/get-files');
       console.log(response.data);
       setFileDict({ ...response.data });
@@ -57,6 +60,7 @@ function Dashboard() {
     }
   };
 
+  // submit the new file
   const handleSubmit = async () => {
     if (!file || !title) {
         alert('Please fill in all fields.');
@@ -76,7 +80,7 @@ function Dashboard() {
         );
         console.log(uploadResponse.data);
         
-        // If upload is successful, proceed to process the PDF
+        // If upload is successful, proceed to process the PDF for API simplification
         if (uploadResponse.status === 200) {
           closePopup(); 
           fetchFiles();
@@ -91,6 +95,7 @@ function Dashboard() {
     }
 };
   
+// display Links to other pages, upload document method, and list of documents for the user
   return (
     <div>
        <div className="header">
@@ -111,7 +116,6 @@ function Dashboard() {
           <button onClick={closePopup}>Close</button>
         </div>
       )}
-      {/* Render a colored, rounded div for each document */}
       <div style={{ marginTop: '20px' }}>
         {Object.entries(fileDict).map(([title, fileName], index) => (
           <div key={index} style={{ /* styling code */ }}>

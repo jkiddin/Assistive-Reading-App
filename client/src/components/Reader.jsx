@@ -10,17 +10,18 @@ import jsPDF from 'jspdf';
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
 function Reader() {
-    const { title } = useParams();
-    const [file, setFile] = useState(null);
-    const [simplifiedPage, setSimplifiedPage] = useState(null);
-    const [numPages, setNumPages] = useState(null);
-    const [pageNumber, setPageNumber] = useState(1); 
-    const [isLoaded, setIsLoaded] = useState(false);
+    const { title } = useParams(); // title of file
+    const [file, setFile] = useState(null); // file with original pdf
+    const [simplifiedPage, setSimplifiedPage] = useState(null); // file with simplified page
+    const [numPages, setNumPages] = useState(null); // number of pages
+    const [pageNumber, setPageNumber] = useState(1); // reader's progress
+    const [isLoaded, setIsLoaded] = useState(false); // whether reader's progress has been fetched yet
 
     const onDocumentLoadSuccess = useCallback(({ numPages }) => {
-        setNumPages(numPages); // Set total number of pages
+        setNumPages(numPages); 
     }, []);
 
+    // fetch original pdf
     const fetchPDF = async (url) => {
         try {
             const response = await axios.get(url, {
@@ -34,36 +35,35 @@ function Reader() {
         }
     };
 
+    // fetch simplified page for the pdf
     const fetchPage = async () => {
         try {
-            // Fetch the simplified text data for the specified page
             const response = await axios.get(`http://127.0.0.1:3001/pdf/${encodeURIComponent(title)}/${pageNumber}`);
             // console.log(response.data);
-            const paragraphs = response.data; // Assuming the API returns an array of paragraphs
+            const paragraphs = response.data; // returns an array of paragraphs
             console.log(paragraphs);
 
-            // Create a new PDF with jsPDF and add text
+            // Create a new PDF with jsPDF 
             const doc = new jsPDF();
-            doc.setFont('Helvetica'); // Set the font to Helvetica, which is a standard PDF font similar to system sans-serif fonts
-            doc.setFontSize(12); // Set a standard font size, adjust as needed
+            doc.setFont('Helvetica'); // Set the font to Helvetica
+            doc.setFontSize(12); 
             let yPos = 40; // Vertical position for the first line of text
             const margin = 10; // Margin for the sides
             const maxWidth = doc.internal.pageSize.getWidth() - 2 * margin; // Maximum width of text
         
             paragraphs.forEach(para => {
-            // Split the paragraph into lines considering the maximum width
+            // Split the paragraph into lines based on max width
             let lines = doc.splitTextToSize(para, maxWidth);
         
-            lines = lines.map(line => line.trim()); // Trim any potential extra whitespace from each line
+            lines = lines.map(line => line.trim()); 
 
             lines.forEach(line => {
              
                 doc.text(line, margin, yPos);
-                yPos += 10; // Adjust line height spacing if needed
+                yPos += 10; // line height spacing
             });
 
-            // Add extra space after each paragraph if desired
-            yPos += 10; // Adjust paragraph spacing
+            yPos += 10; // paragraph spacing
             });
             // Generate a blob URL from the PDF
             const pdfBlob = doc.output('blob');
@@ -76,6 +76,7 @@ function Reader() {
         }
     };
 
+    // fetch pdf on load or if title changes
     useEffect(() => {
         const encodedTitle = decodeURIComponent(title);
         // Fetch original PDF
@@ -83,17 +84,16 @@ function Reader() {
     }, [title]);
 
 
-    useEffect(() => {
-        
+    // fetch simplfied page only after page number has been loaded
+    useEffect(() => {     
         if (isLoaded){
             const encodedTitle = decodeURIComponent(title);
               // Fetch simplified PDF
             fetchPage(`http://127.0.0.1:3001/pdf/${encodedTitle}/${pageNumber}`);
-        }
-        
-    
+        }     
     }, [title, pageNumber, isLoaded]);
     
+    // load reading progress
     useEffect(() => {
         const loadProgress = async () => {
             try {
@@ -110,6 +110,7 @@ function Reader() {
         loadProgress();
     }, [title]);
 
+    // only save progress once page number is fetched
     useEffect(() => {
         if (isLoaded) { 
             const saveProgress = async () => {
@@ -125,7 +126,7 @@ function Reader() {
 
             saveProgress();
         }
-    }, [pageNumber, title]);  // This useEffect runs every time pageNumber or title changes
+    }, [pageNumber, title]);  
     
    
     // Function to go to the previous page
@@ -134,18 +135,7 @@ function Reader() {
     // Function to go to the next page
     const goToNextPage = useCallback(() => setPageNumber(prevPage => prevPage + 1), []);
 
-    const onRenderSuccess = useCallback((page) => {
-        page.getTextContent().then((textContent) => {
-          // Log the structure of textContent to the console
-          console.log('Text content object:', textContent);
-          
-          const textItems = textContent.items;
-          if (textItems && Array.isArray(textItems)) {
-            const pageText = textItems.map(item => item.str).join(' ');
-            console.log(pageText);
-          }
-        });
-      }, []);
+    // return links and the pdf with simplification by its side
     return (
         <div>
             <div className="header">
@@ -163,10 +153,9 @@ function Reader() {
                     )}
                 </div>
                 <div>
-                {/* Display the simplified PDF generated by jsPDF */}
                 {simplifiedPage && (
                    <Document
-                   file={simplifiedPage}  // Here we pass the blob URL to the 'file' prop
+                   file={simplifiedPage}  
                  >
                    <Page pageNumber={1} />
                  </Document>
