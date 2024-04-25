@@ -183,7 +183,18 @@ function Reader() {
                             <Page pageNumber={1} />
                         </Document>
                     ) : (
-                        <div>Loading...</div>  // Display this when simplifiedPage is null
+                        <div style={{
+                            padding: '300px 220px', // More padding on the top and bottom, less on the sides
+                            fontSize: '16px',
+                            color: '#888',
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            height: '100%', 
+                            width: '100%' 
+                        }}>
+                            Loading Simplification...
+                        </div>
                     )}
                 </div>
             </div>

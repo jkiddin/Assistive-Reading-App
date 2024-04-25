@@ -220,6 +220,9 @@ def delete_document(title):
     if os.path.exists(secure_filename_path):
         os.remove(secure_filename_path)
 
+    # delete from cache
+    del simplified_cache[title]
+
     return jsonify({"message": "Document deleted successfully", "title": title}), 200
     
 
