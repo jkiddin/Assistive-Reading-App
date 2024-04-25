@@ -47,7 +47,7 @@ function Reader() {
             const doc = new jsPDF();
             doc.setFont('Helvetica');
             doc.setFontSize(12);
-            let yPos = 50;
+            let yPos = 40;
             const margin = 10;
             const maxWidth = doc.internal.pageSize.getWidth() - 2 * margin;
     
@@ -146,11 +146,14 @@ function Reader() {
                 alignItems: 'center',
                 justifyContent: 'space-evenly',
                 marginTop: '-30px',           // Reduces top margin
-                marginBottom: '2px',     
+                marginBottom: '5px',     
                 backgroundColor: '#f5f5f5', // Light gray background
                 padding: '5px 0',        
                 width: '100%',            
                 boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                position: 'sticky', // Makes the header sticky
+                top: '0', // Define the top boundary for the sticky element
+                zIndex: '1000' // Ensure the header is on top of other content
             }}>
                 <Link to="/" className="home-button">App</Link>
                 {numPages && (
@@ -170,14 +173,14 @@ function Reader() {
                 <div>
                     {file && (
                         <Document file={file} onLoadSuccess={onDocumentLoadSuccess}>
-                            <Page pageNumber={pageNumber} scale={0.75}/>
+                            <Page pageNumber={pageNumber} />
                         </Document>
                     )}
                 </div>
                 <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                     {simplifiedPage ? (
                         <Document file={simplifiedPage}>
-                            <Page pageNumber={1} scale={0.85}/>
+                            <Page pageNumber={1} />
                         </Document>
                     ) : (
                         <div>Loading...</div>  // Display this when simplifiedPage is null
