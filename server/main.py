@@ -4,12 +4,13 @@ from flask_cors import CORS
 from werkzeug.utils import safe_join, secure_filename
 import json
 import os
-from simplification import simplify_pdf, simplify_text
+from simplification import simplify_pdf, simplify_text, simplified_cache
 from pdfminer.high_level import extract_text
 
 
+
 app = Flask(__name__)
-simplified_cache = {} # this will hold simplified text so api calls don't have to be repeated
+
 
 
 CORS(app, supports_credentials=True, origins="http://localhost:5173") # change later
@@ -82,7 +83,7 @@ def process_pdf():
     file_path = os.path.join(PDF_STORAGE_FOLDER, filename)
     
     # API call to create a pdf. Storing the simplified pdf should be done there.
-    simplify_pdf(file_path)
+    simplify_pdf(file_path, title)
 
     return jsonify({'status': 'Processing started', 'title': title}), 202
 
@@ -165,11 +166,15 @@ def get_simplified_pdf_page(title, page):
             return jsonify({"error": str(e)}), 500
     else:
          # Retrieve original PDF file from database file table
-        secure_filename_path = secure_filename(og_filename)
-        secure_filename_path = safe_join(PDF_STORAGE_FOLDER, secure_filename_path)
-        extracted_text = extract_text(secure_filename_path, page_numbers=[page-1])
-        simplified_text = simplify_text(extracted_text)
-        # simplified_cache[title][page-1] = simplified_text // need to check if title exists first
+        if (page - 1) not in simplified_cache[title]:
+            secure_filename_path = secure_filename(og_filename)
+            secure_filename_path = safe_join(PDF_STORAGE_FOLDER, secure_filename_path)
+            extracted_text = extract_text(secure_filename_path, page_numbers=[page-1])
+            simplified_text = simplify_text(extracted_text)
+            simplified_cache[title][page-1] = simplified_text 
+        else:
+            simplified_text = simplified_cache[title][page-1]
+        
         single_newline_fixed_text = simplified_text.replace('\n', ' ')
         paragraphs = single_newline_fixed_text.split('  ')  
         return jsonify(paragraphs)

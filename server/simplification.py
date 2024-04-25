@@ -7,9 +7,11 @@ import io
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.platypus import SimpleDocTemplate, PageBreak, Paragraph, Spacer
 from pdfminer.high_level import extract_text
+from collections import defaultdict
 
 # Load environment variables
 load_dotenv()
+simplified_cache = defaultdict(lambda: defaultdict(dict)) # this will hold simplified text so api calls don't have to be repeated
 
 # Access the GPT API key
 client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
@@ -52,7 +54,7 @@ def simplify_text(text):
         return text
 
 
-def simplify_pdf(pdf_path):
+def simplify_pdf(pdf_path, title):
     # Open the original PDF file with PyPDF2 to count the pages
     with open(pdf_path, 'rb') as file:
         pdf_reader = PyPDF2.PdfReader(file)
@@ -69,12 +71,15 @@ def simplify_pdf(pdf_path):
     doc = SimpleDocTemplate(new_pdf_path, pagesize=letter)
 
     story = []  # List to hold the story contents, including Paragraphs and Spacers
-
+   
     # Use PDFMiner
     for page_number in range(number_of_pages):
         # Extract text for the specific page
-        extracted_text = extract_text(pdf_path, page_numbers=[page_number])
-        simplified_text = simplify_text(extracted_text)
+        if page_number not in simplified_cache[title]:
+            extracted_text = extract_text(pdf_path, page_numbers=[page_number])
+            simplified_text = simplify_text(extracted_text)
+        else:
+            simplified_text = simplified_cache[title][page_number]
         print(simplified_text)
         
         # Split text by double newlines

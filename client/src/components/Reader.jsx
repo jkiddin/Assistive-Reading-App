@@ -36,43 +36,39 @@ function Reader() {
     };
 
     // fetch simplified page for the pdf
-    const fetchPage = async () => {
+    const fetchPage = async (title, pageNumber, setSimplifiedPage, source) => {
         try {
-            const response = await axios.get(`http://127.0.0.1:3001/pdf/${encodeURIComponent(title)}/${pageNumber}`);
-            // console.log(response.data);
-            const paragraphs = response.data; // returns an array of paragraphs
-            console.log(paragraphs);
-
-            // Create a new PDF with jsPDF 
+            const response = await axios.get(`http://127.0.0.1:3001/pdf/${encodeURIComponent(title)}/${pageNumber}`, {
+                cancelToken: source.token,  // Use the cancellation token
+                responseType: 'json'  // Ensure you're expecting the correct response type
+            });
+    
+            const paragraphs = response.data;
             const doc = new jsPDF();
-            doc.setFont('Helvetica'); // Set the font to Helvetica
-            doc.setFontSize(12); 
-            let yPos = 50; // Vertical position for the first line of text
-            const margin = 10; // Margin for the sides
-            const maxWidth = doc.internal.pageSize.getWidth() - 2 * margin; // Maximum width of text
-        
+            doc.setFont('Helvetica');
+            doc.setFontSize(12);
+            let yPos = 50;
+            const margin = 10;
+            const maxWidth = doc.internal.pageSize.getWidth() - 2 * margin;
+    
             paragraphs.forEach(para => {
-            // Split the paragraph into lines based on max width
-            let lines = doc.splitTextToSize(para, maxWidth);
-        
-            lines = lines.map(line => line.trim()); 
-
-            lines.forEach(line => {
-             
-                doc.text(line, margin, yPos);
-                yPos += 10; // line height spacing
+                let lines = doc.splitTextToSize(para, maxWidth).map(line => line.trim());
+                lines.forEach(line => {
+                    doc.text(line, margin, yPos);
+                    yPos += 10;
+                });
+                yPos += 5;
             });
-
-            yPos += 5; // paragraph spacing
-            });
-            // Generate a blob URL from the PDF
+    
             const pdfBlob = doc.output('blob');
-            
             const pdfObjectUrl = URL.createObjectURL(pdfBlob);
-            setSimplifiedPage(pdfObjectUrl); // Store the URL of the generated PDF blob in state
-
+            setSimplifiedPage(pdfObjectUrl);
         } catch (error) {
-            console.error("Error fetching or generating PDF: ", error);
+            if (axios.isCancel(error)) {
+                console.log('Fetch for page was cancelled:', pageNumber);
+            } else {
+                console.error("Error fetching or generating PDF: ", error);
+            }
         }
     };
 
@@ -84,15 +80,19 @@ function Reader() {
     }, [title]);
 
 
-    // fetch simplfied page only after page number has been loaded
-    useEffect(() => {     
-        setSimplifiedPage(null);
-        if (isLoaded){
-            const encodedTitle = decodeURIComponent(title);
-              // Fetch simplified PDF
-            fetchPage(`http://127.0.0.1:3001/pdf/${encodedTitle}/${pageNumber}`);
-        }     
-    }, [title, pageNumber, isLoaded]);
+      // fetch simplfied page only after page number has been loaded
+    useEffect(() => {
+        const source = axios.CancelToken.source();  // Create a new token for this effect cycle
+    
+        if (isLoaded) {
+            setSimplifiedPage(null);  // Reset the simplified page state
+            fetchPage(title, pageNumber, setSimplifiedPage, source);  // Pass the cancellation token source
+        }
+    
+        return () => {
+            source.cancel('Cancelled by next render');  // Cleanup function cancels ongoing request
+        };
+    }, [title, pageNumber, isLoaded]);  // Dependencies include all used in fetchPage
     
     // load reading progress
     useEffect(() => {
