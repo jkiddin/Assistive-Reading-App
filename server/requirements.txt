@@ -1,0 +1,7 @@
+flask
+PyPDF2
+openai
+python-dotenv
+reportlab
+pdfminer
+pdfminer.six
