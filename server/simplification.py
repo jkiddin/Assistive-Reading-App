@@ -28,6 +28,7 @@ def simplify_text(text):
                         "You are a helpful assistant trained to translate complex texts into simpler language "
                         "without reducing the amount of text. Your goal is to rephrase the text using simpler words "
                         "and sentence structures while keeping the length and overall structure similar to the original. "
+                        "Use only keyboard characters so no special symbols such as bullet points or icons "
                         "This should make the content understandable for an eighth-grade reading level without summarizing "
                         "or omitting any details."
                     )
@@ -38,7 +39,7 @@ def simplify_text(text):
                         f"Please rephrase the following text into simpler language appropriate for an eighth grader. "
                         f"Keep the total number of words and the paragraph structure as close as possible to the original. "
                         f"Your task is not to summarize but to translate each sentence to be easier to understand, "
-                        f"while maintaining the original story's integrity:\n\n{text}"
+                        f"while maintaining the original text's integrity:\n\n{text}"
                     )
                 }
             ]
