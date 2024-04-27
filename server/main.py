@@ -1,23 +1,33 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, make_response
 from flask import send_from_directory
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 from werkzeug.utils import safe_join, secure_filename
 import json
 import os
 from simplification import simplify_pdf, simplify_text
+from sql import create_connection, check_user_credentials, add_user
 from pdfminer.high_level import extract_text
 
 
 app = Flask(__name__)
 simplified_cache = {} # this will hold simplified text so api calls don't have to be repeated
 
-
-CORS(app, supports_credentials=True, origins="http://localhost:5173") # change later
+CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}}) # change later
+app.config['CORS_HEADERS'] = 'Content-Type'
 
 # API Key
 app.secret_key = os.environ.get('SECRET_KEY', 'default_key_for_development')
 
-# route for homepage. Get rid of this later. Will not need this
+
+# MySQL database configuration
+db_host = "localhost"
+db_user = "super"
+db_password = os.environ.get("SQL_PASS")
+db_name = "schemo"
+
+# Create database connection
+db_connection = create_connection(db_host, db_user, db_password, db_name)
+
 @app.route('/')
 def group_names():
     return jsonify(
@@ -217,6 +227,44 @@ def delete_document(title):
 
     return jsonify({"message": "Document deleted successfully", "title": title}), 200
     
+    
+def _build_cors_preflight_response():
+    response = make_response()
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    response.headers.add("Access-Control-Allow-Headers", "*")
+    response.headers.add("Access-Control-Allow-Methods", "*")
+    return response
+
+def _corsify_actual_response(response):
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    return response
+
+@app.route('/create-account', methods=['POST', 'OPTIONS'])
+@cross_origin()
+def create_account():
+    if request.method == 'POST':
+        data = request.get_json()  # Get data as JSON
+        print("Received data:", data)  # Debug print !-!-!
+        username = data['username']
+        password = data['password']
+        # Add user to the database
+        user_id = add_user(db_connection, username, password)
+        if user_id:
+            return jsonify({'status': 'Account created'})
+        else:
+            return jsonify({'status': 'Failed'})
+
+@app.route('/login', methods=['POST'])
+@cross_origin()
+def login():
+    data = request.get_json()
+    username = data['username']
+    password = data['password']
+    if check_user_credentials(db_connection, username, password):
+        return jsonify({'status': 'Success'})
+    else:
+        return jsonify({'status': 'Failed'})
+
 
 if __name__ == '__main__':
     app.run(debug=True, port=3001)  

@@ -32,6 +32,8 @@ function App() {
             boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
         }}>
           <Link to="/dashboard" className="dashboard-button">Dashboard</Link>
+          <Link to="/login" className="login-button">Login</Link>
+          <Link to="/create-account" className="create-button">New Here?</Link>
       </div>
       <div>
           <img src={reactLogo} className="logo react" alt="React logo" />
