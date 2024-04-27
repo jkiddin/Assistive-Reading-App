@@ -13,11 +13,15 @@ export default function CreateAccount() {
         event.preventDefault();
         try {
             const response = await axios.post('http://127.0.0.1:3001/create-account', { username, password });
+            console.log(response.data.status);
             if (response.data.status === 'Success') {
                 setSuccess('Account successfully created!');
                 setUsername('');
                 setPassword('');
                 setError('');
+            } else if (response.data.status === 'AAE') {
+                setError('Account already exists.')
+                setSuccess('');
             } else {
                 setError('Failed to create account. Please try again.');
                 setSuccess('');

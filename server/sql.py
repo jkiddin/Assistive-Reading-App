@@ -17,17 +17,25 @@ def create_connection(host_name, user_name, user_password, db_name):
     return connection
 
 def check_user_credentials(connection, username, password):
-    cursor = connection.cursor()
-    query = "SELECT * FROM users WHERE username = %s AND password = %s"
-    cursor.execute(query, (username, password))
-    records = cursor.fetchall()
-    cursor.close()
-    return len(records) > 0
+    try:
+        cursor = connection.cursor()
+        query = "SELECT * FROM users WHERE username = %s AND password = %s"
+        cursor.execute(query, (username, password))
+        records = cursor.fetchall()
+        cursor.close()
+        return len(records) > 0
+    except Error as e:
+        print(f"Error: '{e}'")
 
 def add_user(connection, username, password):
-    cursor = connection.cursor()
-    query = "INSERT INTO users (username, password) VALUES (%s, %s)"
-    cursor.execute(query, (username, password))
-    connection.commit()
-    cursor.close()
-    return cursor.lastrowid
+    try:
+        cursor = connection.cursor()
+        query = "INSERT INTO users (username, password) VALUES (%s, %s)"
+        cursor.execute(query, (username, password))
+        connection.commit()
+        cursor.close()
+        return cursor.lastrowid
+    except Error as e:
+        print(f"Error: '{e}'")
+        if e.errno == 1062: 
+            return "duplicate"

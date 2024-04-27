@@ -249,7 +249,10 @@ def create_account():
         password = data['password']
         # Add user to the database
         user_id = add_user(db_connection, username, password)
-        if user_id:
+        print(user_id)
+        if user_id == "duplicate":
+            return jsonify({'status': 'AAE'})
+        elif user_id:
             return jsonify({'status': 'Success'})
         else:
             return jsonify({'status': 'Failed'})
