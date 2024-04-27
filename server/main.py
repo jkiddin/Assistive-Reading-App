@@ -250,7 +250,7 @@ def create_account():
         # Add user to the database
         user_id = add_user(db_connection, username, password)
         if user_id:
-            return jsonify({'status': 'Account created'})
+            return jsonify({'status': 'Success'})
         else:
             return jsonify({'status': 'Failed'})
 
