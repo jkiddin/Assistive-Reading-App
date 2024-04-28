@@ -20,28 +20,22 @@ function App() {
 
   return (
     <>
-      <div className="header" style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-evenly',
-            marginTop: '-30px',           // Reduces top margin
-            marginBottom: '2px',     
-            backgroundColor: '#f5f5f5', // Light gray background
-            padding: '5px 0',        
-            width: '100%',            
-            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-        }}>
-          <Link to="/dashboard" className="dashboard-button">Dashboard</Link>
-          <Link to="/login" className="login-button">Login</Link>
-          <Link to="/create-account" className="create-button">New Here?</Link>
+      <div className="header">
+      <div className="home-links">
+        <Link to="/dashboard" className="dashboard-button">Dashboard</Link>
       </div>
-      <div>
-          <img src={reactLogo} className="logo react" alt="React logo" />
+      <div className="logo-container">
+        <img src={reactLogo} className="logo" alt="React logo" />
       </div>
+      <div className="account-links">
+        <Link to="/login" className="login-button">Login</Link>
+        <Link to="/create-account" className="create-button">New Here?</Link>
+      </div>
+    </div>
       <h1>Assistive Reading App</h1>
       <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
+        <button onClick={() => setCount(count + 1)}>
+          Count is {count}
         </button>
         <div>
           <h2>Group Members</h2>
@@ -57,4 +51,3 @@ function App() {
 }
 
 export default App;
-

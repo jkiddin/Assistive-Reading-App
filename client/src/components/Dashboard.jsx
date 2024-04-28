@@ -98,17 +98,7 @@ function Dashboard() {
 // display Links to other pages, upload document method, and list of documents for the user
   return (
     <div>
-      <div className="header" style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-evenly',
-            marginTop: '-300px',           // Reduces top margin
-            marginBottom: '10px',     
-            backgroundColor: '#f5f5f5', // Light gray background
-            padding: '5px 0',        
-            width: '100%',            
-            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-        }}>
+      <div className="header">
           <Link to="/" className="home-button">App</Link>
       </div>
       <button onClick={showUploadPopup}>Upload Document</button>

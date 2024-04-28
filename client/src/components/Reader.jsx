@@ -141,17 +141,7 @@ function Reader() {
     // return links and the pdf with simplification by its side
     return (
         <div>
-            <div className="header" style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-evenly',
-                marginTop: '-30px',           // Reduces top margin
-                marginBottom: '2px',     
-                backgroundColor: '#f5f5f5', // Light gray background
-                padding: '5px 0',        
-                width: '100%',            
-                boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-            }}>
+            <div className="header">
                 <Link to="/" className="home-button">App</Link>
                 {numPages && (
                     <div className="pagination">

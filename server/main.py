@@ -243,7 +243,7 @@ def _corsify_actual_response(response):
 @cross_origin()
 def create_account():
     if request.method == 'POST':
-        data = request.get_json()  # Get data as JSON
+        data = request.get_json()  
         print("Received data:", data)  # Debug print !-!-!
         username = data['username']
         password = data['password']
