@@ -44,7 +44,7 @@ body {
 .home-links {
   display: flex;
   padding-left: inherit;
-  justify-content: flex-start;
+  justify-content: space-around;
   flex: 1;
 }
 
@@ -103,13 +103,20 @@ button:hover {
   background-color: #94d2bd;
 }
 
+.pagination {
+  padding: 10px 20px;
+  display: flex;
+  flex: 0.8;
+  justify-content: space-evenly;
+}
+
 @media (max-width: 768px) {
   .header {
     flex-direction: column;
     padding: 20px 10px;
   }
 
-  .nav-links, .logo-container {
+  .home-links, .logo-container, .account-links {
     width: 100%;
     justify-content: center;
   }

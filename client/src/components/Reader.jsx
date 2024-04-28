@@ -6,6 +6,7 @@ import 'react-pdf/dist/esm/Page/AnnotationLayer.css'
 import { useParams } from 'react-router-dom';
 import {  Link } from 'react-router-dom';
 import jsPDF from 'jspdf';
+import '../styles/App.css';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
