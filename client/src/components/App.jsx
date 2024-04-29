@@ -11,6 +11,7 @@ function App() {
   const [count, setCount] = useState(0);
   const [members, setMembers] = useState([]);
   const [loggedIn, setLoggedIn] = useState(false);
+  const [username, setUsername] = useState('');
   const navigate = useNavigate();
 
   const fetchAPI = async () => {
@@ -20,6 +21,8 @@ function App() {
       try {
         const user = await axios.get("http://127.0.0.1:3001/is_logged_in");
         setLoggedIn(user.data.logged_in);
+        setUsername(user.data.user_id);
+        console.log(user) /* debug */
       } catch (error) {
         console.log(error.response.data);
       }
@@ -69,7 +72,10 @@ function App() {
         )}
       </div>
     </div>
-      <h1>Assistive Reading App</h1>
+      {loggedIn ? 
+          <h1>Hey, {username}!</h1> : /* Implement "Hey, <user!>"*/
+          <h1>Assistive Reading App</h1> 
+        }
       <div className="card">
         <button onClick={() => setCount(count + 1)}>
           Count is {count}

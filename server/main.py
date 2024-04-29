@@ -19,7 +19,6 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 app.config['SESSION_COOKIE_NAME'] = 'authToken'
 app.config['SESSION_COOKIE_HTTPONLY'] = False
 app.config['SESSION_COOKIE_SECURE'] = True
-app.config['REMEMBER_COOKIE_DURATION'] = 86400
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=1)
 app.config['SESSION_COOKIE_SAMESITE'] = 'None'  # 'Strict', 'Lax', or 'None'
 
@@ -278,7 +277,7 @@ def login():
 @cross_origin(methods=['GET'], supports_credentials=True, headers=['Content-Type', 'Authorization'])
 def is_logged_in():
     if 'user_id' in session:
-        return jsonify({'logged_in': True}), 200
+        return jsonify({'logged_in': True, 'user_id': session['user_id']}), 200
     else:
         return jsonify({'logged_in': False}), 401
 
