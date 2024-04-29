@@ -7,6 +7,7 @@ import { useParams } from 'react-router-dom';
 import {  Link } from 'react-router-dom';
 import jsPDF from 'jspdf';
 import '../styles/App.css';
+import { TransformWrapper, TransformComponent, useControls } from "react-zoom-pan-pinch";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
@@ -17,10 +18,20 @@ function Reader() {
     const [numPages, setNumPages] = useState(null); // number of pages
     const [pageNumber, setPageNumber] = useState(1); // reader's progress
     const [isLoaded, setIsLoaded] = useState(false); // whether reader's progress has been fetched yet
+    const [scale, setScale] = useState(0.75); // initial scale for documents
+    const fileRef = useRef(null);
+    const simplifiedPageRef = useRef(null);
 
     const onDocumentLoadSuccess = useCallback(({ numPages }) => {
-        setNumPages(numPages); 
-    }, []);
+        setNumPages(numPages);
+        //added for scaling so that they're the same height. B)
+        const fileHeight = fileRef.current?.clientHeight;
+        if (fileHeight && simplifiedPageRef.current) {
+            const simplifiedPageHeight = simplifiedPageRef.current?.clientHeight;
+            const newScale = fileHeight / simplifiedPageHeight * scale;
+            setScale(newScale);
+        }
+    }, [scale]);
 
     // fetch original pdf
     const fetchPDF = async (url) => {
@@ -139,6 +150,17 @@ function Reader() {
     // Function to go to the next page
     const goToNextPage = useCallback(() => setPageNumber(prevPage => prevPage + 1), []);
 
+    const Toolbar = () => {
+        const { zoomIn, zoomOut, resetTransform } = useControls();
+        return (
+        <div className="Toolbar" >
+          <button onClick={() => zoomIn()}>Zoom In</button>
+          <button onClick={() => zoomOut()}>Zoom Out</button>
+          <button onClick={() => resetTransform()}>Reset</button>
+        </div>
+      );
+    };
+
     // return links and the pdf with simplification by its side
     return (
         <div>
@@ -157,24 +179,53 @@ function Reader() {
                 )}
                 <Link to="/dashboard" className="dashboard-button">Dashboard</Link>
             </div>
-            <div className="pdf-viewer" style={{ display: 'flex', justifyContent: 'space-around', alignItems: 'center' }}>
-                <div>
-                    {file && (
-                        <Document file={file} onLoadSuccess={onDocumentLoadSuccess}>
-                            <Page pageNumber={pageNumber} scale={0.75}/>
-                        </Document>
-                    )}
+            
+            <div className="pdf-viewer">
+    <div className="viewer-section">
+        <TransformWrapper>
+            {({ zoomIn, zoomOut, resetTransform }) => (
+            <>
+                <TransformComponent>
+                    <div>
+                        {file && (
+                            <Document file={file} onLoadSuccess={onDocumentLoadSuccess}>
+                                <Page pageNumber={pageNumber} scale={scale}/>
+                            </Document>
+                        )}
+                    </div>
+                </TransformComponent>
+                <div className='Toolbar-Container left-toolbar'>
+                    <Toolbar zoomIn={zoomIn} zoomOut={zoomOut} resetTransform={resetTransform} />
                 </div>
-                <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                    {simplifiedPage ? (
-                        <Document file={simplifiedPage}>
-                            <Page pageNumber={1} scale={0.85}/>
-                        </Document>
-                    ) : (
-                        <div>Loading...</div>  // Display this when simplifiedPage is null
-                    )}
+            </>
+            )}
+        </TransformWrapper>
+    </div>
+    <div className="viewer-section">
+        <TransformWrapper>
+            {({ zoomIn, zoomOut, resetTransform }) => (
+            <>
+                <TransformComponent>
+                    <div>
+                        {simplifiedPage ? (
+                            <Document file={simplifiedPage}>
+                                <Page pageNumber={1} scale={scale}/>
+                            </Document>
+                        ) : (
+                            <div>Loading...</div>
+                        )}
+                    </div>
+                </TransformComponent>
+                <div className='Toolbar-Container right-toolbar'>
+                    <Toolbar zoomIn={zoomIn} zoomOut={zoomOut} resetTransform={resetTransform} />
                 </div>
-            </div>
+            </>
+            )}
+        </TransformWrapper>
+    </div>
+</div>
+
+
             
         </div>
     );

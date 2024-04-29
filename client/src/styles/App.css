@@ -4,6 +4,7 @@ body {
   color: #e0e0e0;
   margin: 0;
   padding: 0;
+  height: 100%;
   box-sizing: border-box;
 }
 
@@ -18,8 +19,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 10px 10px;
-  background-color: #1f1f1f;
+  padding: 5px 5px;
+  background-color: rgba(31, 31, 31, 0.95);
   color: #fff;
   width: 100%;
   position: fixed;
@@ -27,6 +28,7 @@ body {
   left: 0;
   right: 0;
   z-index: 1000;
+  flex: 0 1 auto;
 }
 
 .logo-container {
@@ -49,6 +51,47 @@ body {
   flex: 1;
 }
 
+.pdf-viewer {
+  margin-top: 50px;
+  flex: 1 1 auto;
+  flex-grow:  1;
+  overflow: auto;
+  display: flex;
+  justify-content: space-between;
+}
+
+.reader {
+  height: calc(100vh - 50px);
+  display: flex;
+  flex-direction: column;
+}
+
+.viewer-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; 
+  width: 100%
+}
+
+.Toolbar-Container {
+  padding: 10px; 
+}
+
+.left-toolbar {
+  align-self: center; 
+}
+
+.right-toolbar {
+  align-self: center;
+}
+
+.Toolbar {
+  display: flex;
+  gap: 10px;
+}
+
+
 .header a, .logout-button {
   color: #ddd;
   text-decoration: none;
@@ -66,6 +109,7 @@ body {
 .logo {
   height: 70px;
   padding: 10px;
+  padding-right: 15px;
   transition: transform 0.2s;
 }
 

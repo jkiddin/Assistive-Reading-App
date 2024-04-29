@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import reactLogo from '../assets/react.svg';
+import Soar from '../styles/Soar3.png';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import '../styles/App.css';
@@ -54,7 +54,7 @@ function App() {
           }
       </div>
       <div className="logo-container">
-        <img src={reactLogo} className="logo" alt="React logo" />
+        <img src={Soar} className="logo" alt="Soar logo" />
       </div>
       <div className="account-links">
         {loggedIn ? (
