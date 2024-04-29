@@ -171,7 +171,7 @@ function Reader() {
                         <button onClick={goToPrevPage} disabled={pageNumber <= 1}>
                             Prev
                         </button>
-                        <span>Page {pageNumber} of {numPages}</span>
+                        <span className="PageNo">Page {pageNumber} of {numPages}</span>
                         <button onClick={goToNextPage} disabled={pageNumber >= numPages}>
                             Next
                         </button>

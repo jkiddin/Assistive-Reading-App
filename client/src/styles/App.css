@@ -168,6 +168,10 @@ button:hover {
   justify-content: space-evenly;
 }
 
+.PageNo {
+  align-self: center;
+}
+
 @media (max-width: 768px) {
   .header {
     flex-direction: column;
