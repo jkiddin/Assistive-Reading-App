@@ -23,7 +23,6 @@ app.config['REMEMBER_COOKIE_DURATION'] = 86400
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=1)
 app.config['SESSION_COOKIE_SAMESITE'] = 'None'  # 'Strict', 'Lax', or 'None'
 
-
 # API Key
 app.secret_key = os.environ.get('SECRET_KEY', 'default_key_for_development')
 
@@ -278,19 +277,15 @@ def login():
 @app.route('/is_logged_in', methods=['GET'])
 @cross_origin(methods=['GET'], supports_credentials=True, headers=['Content-Type', 'Authorization'])
 def is_logged_in():
-    print(session)
     if 'user_id' in session:
-        print("Logged in")
         return jsonify({'logged_in': True}), 200
     else:
-        print("NOT Logged in")
         return jsonify({'logged_in': False}), 401
 
 @app.route('/logout', methods=['POST'])
 @cross_origin(methods=['POST'], supports_credentials=True, headers=['Content-Type', 'Authorization'])
 def logout():
     print("Logout Called!")
-    print(session)
     session.permanent = False
     session.pop('user_id', None)
     response = jsonify({'status': 'Logged out successfully'})

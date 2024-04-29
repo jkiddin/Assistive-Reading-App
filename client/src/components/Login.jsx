@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import '../styles/Account.css';
-import Cookies from 'js-cookie';
 
 export default function Login() {
     const [username, setUsername] = useState('');
