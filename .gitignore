@@ -8,3 +8,4 @@ __pycache__/
 client/package-lock.json
 client/package.json
 server/database/metadata.json
+client/src/styles/Vite + React.html
