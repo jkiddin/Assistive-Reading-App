@@ -20,7 +20,7 @@ pip install Flask-CORS
 
 Step 4: Launch the backend server
 
-python3 main.py
+OPENAI_API_KEY=<openai_api_key> MONGO_DB_USER=<user> MONGO_DB_PASSWORD=<password> python3 server/main.py
 
 Front End
 
@@ -58,3 +58,11 @@ npm install jspdf
 
 
 The server/venv files and any node_modules files should not be committed to Github, as well as any test pdfs. Use git status to check before committing.
+
+# Setting up Atlas MongoDB Cluster
+
+* Create free account on Atlas
+* Create cluster "assistive-reading-app-cluster"
+* Create database within the cluster "assistive-reading-app-db"
+* Create collection "uploads"
+* Ensure your IP address is added to Network Access List (Security > Network Access > IP Access List)
