@@ -5,6 +5,7 @@ import ErrorPage from './ErrorPage';
 import Reader from './Reader';
 import Login from './Login';
 import CreateAccount from './CreateAccount';
+import ProtectedRoute from './ProtectedRoute';
 
 const Router = () => {
     const router = createBrowserRouter([
@@ -16,7 +17,7 @@ const Router = () => {
         },
         {
             path: "dashboard",
-            element: <Dashboard></Dashboard>
+            element: <ProtectedRoute><Dashboard /></ProtectedRoute>
         },
         {
             path: "login",

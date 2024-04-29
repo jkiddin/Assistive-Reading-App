@@ -68,6 +68,12 @@ body {
   transition: transform 0.2s;
 }
 
+.PFP {
+  height: 40px;
+  padding: 10px;
+  transition: transform 0.2s;
+}
+
 .logo:hover {
   transform: scale(1.1);
 }
@@ -116,7 +122,7 @@ button:hover {
     padding: 20px 10px;
   }
 
-  .home-links, .logo-container, .account-links {
+  .home-links, .logo-container, .account-links, .PFP-container {
     width: 100%;
     justify-content: center;
   }

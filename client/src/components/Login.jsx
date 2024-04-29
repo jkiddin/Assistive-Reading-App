@@ -1,30 +1,39 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import '../styles/Account.css';
+import Cookies from 'js-cookie';
 
 export default function Login() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const navigate = useNavigate();
 
     const handleLogin = async (event) => {
         event.preventDefault();
         try {
             const response = await axios.post('http://127.0.0.1:3001/login', { username, password });
-            if (response.data.status === 'Success') {
-                setSuccess('Logged in!');
-                setError('');
-                console.log("Logged in successfully!");
+            if (response.status === 200) {
+              setSuccess('Logged in!');
+              setError('');
+              navigate('/', { replace: true });
+            } else if (response.status === 401) {
+              console.log('debug wording yay yippee!');
             } else {
-                setError('Login failed. Please check your username and password.');
-                setSuccess('');
+              setError('Something went wrong. Please try again.');
+              setSuccess('');
             }
         } catch (error) {
+          if (error.response.status === 401) {
+            setError('Login failed. Please check your username and password.');
+            setSuccess('');
+          } else {
             setError('Failed to connect to the server.');
             setSuccess('');
-            console.log(error);
+          }
+          console.log(error);
         }
     };
 

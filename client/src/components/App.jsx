@@ -1,18 +1,41 @@
 import { useState, useEffect } from 'react';
 import reactLogo from '../assets/react.svg';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import '../styles/App.css';
+import pfp from '../styles/pfp.png';
+
+axios.defaults.withCredentials = true;
 
 function App() {
   const [count, setCount] = useState(0);
   const [members, setMembers] = useState([]);
+  const [loggedIn, setLoggedIn] = useState(false);
+  const navigate = useNavigate();
 
   const fetchAPI = async () => {
       const response = await axios.get("http://127.0.0.1:3001/");
-      console.log(response.data.group_members);
       setMembers(response.data.group_members);
+
+      try {
+        const user = await axios.get("http://127.0.0.1:3001/is_logged_in");
+        setLoggedIn(user.data.logged_in);
+      } catch (error) {
+        console.log(error.response.data);
+      }
   };
+
+  const handleLogout = async () => {
+    axios.post('http://127.0.0.1:3001/logout', {}, { withCredentials: true })
+         .then(response => {
+             console.log('Logout successful:', response.data);
+             window.location = '/';
+         })
+         .catch(error => {
+             console.error('Logout failed:', error);
+         });
+};
+
 
   useEffect(() => {
     fetchAPI();
@@ -22,14 +45,28 @@ function App() {
     <>
       <div className="header">
       <div className="home-links">
-        <Link to="/dashboard" className="dashboard-button">Dashboard</Link>
+      {loggedIn ? 
+          <Link to="/dashboard" className="dashboard-button">Dashboard</Link> :
+          <span className="dashboard-button-disabled">Login to Access</span>
+          }
       </div>
       <div className="logo-container">
         <img src={reactLogo} className="logo" alt="React logo" />
       </div>
       <div className="account-links">
-        <Link to="/login" className="login-button">Login</Link>
-        <Link to="/create-account" className="create-button">New Here?</Link>
+        {loggedIn ? (
+          <>
+            <div className="PFP-container">
+              <img src={pfp} alt="Profile" className="PFP"/>
+            </div>
+            <button className="logout-button" onClick={handleLogout}>Sign Out</button>
+          </>
+        ) : (
+          <>
+            <Link to="/login" className="login-button">Login</Link>
+            <Link to="/create-account" className="create-button">New Here?</Link>
+          </>
+        )}
       </div>
     </div>
       <h1>Assistive Reading App</h1>

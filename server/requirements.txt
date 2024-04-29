@@ -7,3 +7,4 @@ pdfminer
 pdfminer.six
 flask_cors
 mysql-connector-python
+bcrypt
