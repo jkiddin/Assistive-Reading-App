@@ -4,6 +4,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import '../styles/App.css';
 import pfp from '../styles/pfp.png';
+import emoji from 'emoji-dictionary'
+import { motion } from 'framer-motion'
 
 axios.defaults.withCredentials = true;
 
@@ -44,7 +46,13 @@ function App() {
     fetchAPI();
   }, []);
 
-  return (
+  return (      
+    <motion.body
+    initial={{opacity: 0}}
+    animate={{opacity: 1}}
+    transition={{ duration: 0.75, ease: "easeOut" }}
+    >
+      <div className='content'>
     <>
       <div className="header">
       <div className="home-links">
@@ -72,24 +80,37 @@ function App() {
         )}
       </div>
     </div>
-      {loggedIn ? 
-          <h1>Hey, {username}!</h1> : /* Implement "Hey, <user!>"*/
+      
+      <motion.div className="card"
+      initial={{ scale: 0 }}
+      animate={{ scale: 1 }}
+      transition={{
+        type: "spring",
+        stiffness: 260,
+        bounce: 0.1
+      }}
+      >
+      {loggedIn ? (
+        <>
+          <h1>Hey, {username}! {emoji.getUnicode("wave")}</h1> 
+          <h2>Thanks for using our app.</h2>
+          <h2>Go ahead and click Dashboard to begin your journey.</h2>
+          </>
+        ) : ( 
           <h1>Assistive Reading App</h1> 
-        }
-      <div className="card">
-        <button onClick={() => setCount(count + 1)}>
-          Count is {count}
-        </button>
+        )}
         <div>
-          <h2>Group Members</h2>
+        </div>
+      </motion.div>
+      <h2 className='GroupMem'>Group Members</h2>
           <ol>
             {members.map((member, index) => (
               <li key={index}>{member}</li>
             ))}
           </ol>
-        </div>
-      </div>
     </>
+    </div>
+    </motion.body>
   );
 }
 

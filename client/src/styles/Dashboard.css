@@ -20,7 +20,8 @@
 }
 
 .button:hover {
-    background-color: #0056b3;
+    background-color: #555;
+    color: #ddd;
 }
 
 .popup {
