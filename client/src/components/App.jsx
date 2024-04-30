@@ -51,7 +51,7 @@ function App() {
     fetchAPI();
     animate(color, COLORS, {
       ease: "easeInOut",
-      duration: 10,
+      duration: 30,
       repeat: Infinity,
       repeatType: "mirror",
     });

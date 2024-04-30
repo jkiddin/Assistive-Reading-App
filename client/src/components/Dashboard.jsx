@@ -109,9 +109,11 @@ function Dashboard() {
       </div>
       <button onClick={showUploadPopup}>Upload Document</button>
       {showPopup && (
+        <div className='upload-container'>
         <div className="upload-popup">
-          <h2>Title of Document</h2>
+          <h2 className='titleD'>Title of Document</h2>
           <input
+            className='document-title'
             type="text"
             placeholder="Enter title"
             value={title}
@@ -120,6 +122,7 @@ function Dashboard() {
           <input type="file" accept="application/pdf" onChange={handleFileUpload} />
           <button onClick={handleSubmit}>Submit</button> 
           <button onClick={closePopup}>Close</button>
+        </div>
         </div>
       )}
       <div style={{ marginTop: '20px' }}>

@@ -3,8 +3,20 @@
     font-family: Arial, sans-serif;
 }
 
+.upload-container {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    width: 50em;
+    margin: auto;
+    padding: 20px;
+    border-radius: 5px;
+    background-color: #2b2b2b;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
 .content {
-    padding-top 10vh;
+    padding-top: 10vh;
 }
 
 .header {
@@ -39,6 +51,7 @@
     z-index: 1000;
 }
 
+
 .overlay {
     position: fixed;
     top: 0;
@@ -57,8 +70,16 @@
     border-radius: 4px;
 }
 
+.document-title {
+    width: calc(100% - 280px);
+}
+
 .file-list {
     margin-top: 20px;
+}
+
+.titleD {
+    margin-top: 0%;
 }
 
 .file-item {

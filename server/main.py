@@ -25,7 +25,6 @@ app.config['SESSION_COOKIE_SECURE'] = True
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=1)
 app.config['SESSION_COOKIE_SAMESITE'] = 'None'  # 'Strict', 'Lax', or 'None'
 
-
 # API Key
 app.secret_key = os.environ.get('SECRET_KEY', 'default_key_for_development')
 
