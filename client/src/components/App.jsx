@@ -43,7 +43,9 @@ function App() {
          });
 };
   const color = useMotionValue(COLORS[0]);
-  const backgroundImage = useMotionTemplate`radial-gradient(110% 120% at 50% 0%, #121212 58%, ${color})`;
+  const backgroundImage = useMotionTemplate`radial-gradient(120% 120% at 50% 0%, #121212 70%, ${color})`;
+  const border = useMotionTemplate`1px solid ${color}`;
+  const boxShadow = useMotionTemplate`0px 4px 24px ${color}`;
 
   useEffect(() => {
     fetchAPI();
@@ -93,7 +95,10 @@ function App() {
       </div>
     </div>
       
-      <div className="card">
+      <motion.div className="card" style={{
+        boxShadow,
+        border,
+        }}>
       {loggedIn ? (
         <>
           <h1>Hey, {username}! {emoji.getUnicode("wave")}</h1> 
@@ -105,7 +110,7 @@ function App() {
         )}
         <div>
         </div>
-      </div>
+      </motion.div>
       <h2 className='GroupMem'>Group Members</h2>
           <ol>
             {members.map((member, index) => (
