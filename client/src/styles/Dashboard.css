@@ -3,6 +3,10 @@
     font-family: Arial, sans-serif;
 }
 
+.content {
+    padding-top 10vh;
+}
+
 .header {
     display: flex;
     justify-content: center;

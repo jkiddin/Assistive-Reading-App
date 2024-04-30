@@ -50,7 +50,7 @@ function App() {
     <motion.body
     initial={{opacity: 0}}
     animate={{opacity: 1}}
-    transition={{ duration: 0.75, ease: "easeOut" }}
+    transition={{ duration: 0.5, ease: 'easeIn' }}
     >
       <div className='content'>
     <>
@@ -81,15 +81,7 @@ function App() {
       </div>
     </div>
       
-      <motion.div className="card"
-      initial={{ scale: 0 }}
-      animate={{ scale: 1 }}
-      transition={{
-        type: "spring",
-        stiffness: 260,
-        bounce: 0.1
-      }}
-      >
+      <div className="card">
       {loggedIn ? (
         <>
           <h1>Hey, {username}! {emoji.getUnicode("wave")}</h1> 
@@ -101,7 +93,7 @@ function App() {
         )}
         <div>
         </div>
-      </motion.div>
+      </div>
       <h2 className='GroupMem'>Group Members</h2>
           <ol>
             {members.map((member, index) => (

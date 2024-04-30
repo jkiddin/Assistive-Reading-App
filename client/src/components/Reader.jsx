@@ -163,7 +163,7 @@ function Reader() {
 
     // return links and the pdf with simplification by its side
     return (
-        <div>
+        <div style={{ 'padding-top': '20px' }}>
             <div className="header">
                 <Link to="/" className="home-button">App</Link>
                 {numPages && (

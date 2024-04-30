@@ -35,6 +35,7 @@ export default function CreateAccount() {
     };
 
     return (
+      <div className='content'>
         <div className="account-container">
             <Link to="/" className="home-link">Home</Link>
             <h1>Create Account</h1>
@@ -54,5 +55,6 @@ export default function CreateAccount() {
                 {success && <p className="success-message">{success}</p>}
             </form>
         </div>
+      </div>
     );
 }

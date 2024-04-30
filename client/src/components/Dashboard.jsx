@@ -98,7 +98,7 @@ function Dashboard() {
   
 // display Links to other pages, upload document method, and list of documents for the user
   return (
-    <div>
+    <div className='content'>
       <div className="header">
           <Link to="/" className="home-button">App</Link>
       </div>

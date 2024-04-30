@@ -37,6 +37,7 @@ export default function Login() {
     };
 
     return (
+      <div className='content'>
         <div className="account-container">
             <Link to="/" className="home-link">Home</Link>
             <h1>Login</h1>
@@ -56,5 +57,6 @@ export default function Login() {
                 {success && <p className="success-message">{success}</p>}
             </form>
         </div>
+      </div>
     );
 }
