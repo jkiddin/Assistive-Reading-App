@@ -181,7 +181,7 @@ function Reader() {
             </div>
             
             <div className="pdf-viewer">
-    <div className="viewer-section">
+    <div className='viewer-section'>
         <TransformWrapper>
             {({ zoomIn, zoomOut, resetTransform }) => (
             <>
@@ -201,8 +201,11 @@ function Reader() {
             )}
         </TransformWrapper>
     </div>
-    <div className="viewer-section">
-        <TransformWrapper>
+    <div className='viewer-section'>
+        <TransformWrapper
+         alignmentAnimation={{ sizeX: 0, sizeY: 0 }}
+         panning={{ excluded:["input"]}}
+        >
             {({ zoomIn, zoomOut, resetTransform }) => (
             <>
                 <TransformComponent>

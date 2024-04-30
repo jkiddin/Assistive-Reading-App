@@ -5,9 +5,11 @@ import axios from 'axios';
 import '../styles/App.css';
 import pfp from '../styles/pfp.png';
 import emoji from 'emoji-dictionary'
-import { motion } from 'framer-motion'
+import { motion, useMotionTemplate, useMotionValue, animate } from 'framer-motion'
 
 axios.defaults.withCredentials = true;
+
+const COLORS = ["#13FFAA", "#1E67C6", "#CE84CF", "#DD335C"];
 
 function App() {
   const [count, setCount] = useState(0);
@@ -40,17 +42,27 @@ function App() {
              console.error('Logout failed:', error);
          });
 };
-
+  const color = useMotionValue(COLORS[0]);
+  const backgroundImage = useMotionTemplate`radial-gradient(110% 120% at 50% 0%, #121212 58%, ${color})`;
 
   useEffect(() => {
     fetchAPI();
+    animate(color, COLORS, {
+      ease: "easeInOut",
+      duration: 10,
+      repeat: Infinity,
+      repeatType: "mirror",
+    });
   }, []);
 
+  
   return (      
     <motion.body
+    style={{backgroundImage}}
     initial={{opacity: 0}}
     animate={{opacity: 1}}
     transition={{ duration: 0.5, ease: 'easeIn' }}
+    className="relative grid min-h-screen place-content-center overflow-hidden bg-gray-950 px-4 py-24 text-gray-200"
     >
       <div className='content'>
     <>
