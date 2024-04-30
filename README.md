@@ -17,7 +17,7 @@ pip install -r requirements.txt
 3. Ensure you have [MySQL](https://www.mysql.com/) up and running. Run [setup.sql](server/setup.sql) with your own chosen password. Feel free to mess around with the naming of the database and users, just ensure to change it [in the main file](server/main.py#L31-L35).
 
 
-4. To set up your Atlas MongoDB Cluster:
+4. To set up your [Atlas MongoDB](https://www.mongodb.com/products/platform/atlas-database) Cluster:
 * Create free account on Atlas
 * Create cluster "assistive-reading-app-cluster"
 * Create database within the cluster "assistive-reading-app-db"
