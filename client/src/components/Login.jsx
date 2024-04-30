@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import '../styles/Account.css';
+import { motion } from 'framer-motion'
 
 export default function Login() {
     const [username, setUsername] = useState('');
@@ -37,7 +38,11 @@ export default function Login() {
     };
 
     return (
-      <div className='content'>
+      <motion.div className='content'
+      initial={{opacity: 0}}
+      animate={{opacity: 1}}
+      transition={{ duration: 0.5, ease: 'anticipate' }}
+      >
         <div className="account-container">
             <Link to="/" className="home-link">Home</Link>
             <h1>Login</h1>
@@ -57,6 +62,6 @@ export default function Login() {
                 {success && <p className="success-message">{success}</p>}
             </form>
         </div>
-      </div>
+      </motion.div>
     );
 }

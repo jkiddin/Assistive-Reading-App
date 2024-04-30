@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios'; 
 import '../styles/Dashboard.css'
+import { motion } from 'framer-motion'
 
 function Dashboard() {
   const [showPopup, setShowPopup] = useState(false); // whether to display popup to add file
@@ -98,7 +99,11 @@ function Dashboard() {
   
 // display Links to other pages, upload document method, and list of documents for the user
   return (
-    <div className='content'>
+    <motion.div className='content'
+    initial={{opacity: 0}}
+    animate={{opacity: 1}}
+    transition={{ duration: 0.5, ease: 'easeIn' }}
+    >
       <div className="header">
           <Link to="/" className="home-button">App</Link>
       </div>
@@ -136,7 +141,7 @@ function Dashboard() {
           </div>
         ))}
       </div>
-    </div>
+    </motion.div>
   );
 }
 
