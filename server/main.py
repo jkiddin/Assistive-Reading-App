@@ -1,27 +1,45 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, make_response, session, Response
 from flask import send_from_directory
-from flask_cors import CORS
-
+from flask_cors import CORS, cross_origin
 from werkzeug.utils import safe_join, secure_filename
 import datetime
 import json
 import os
 import mongodb
 from simplification import simplify_pdf, simplify_text
+from sql import create_connection, check_user_credentials, add_user
+from functools import wraps
 from pdfminer.high_level import extract_text
+from datetime import timedelta
 
 app = Flask(__name__)
 simplified_cache = {} # this will hold simplified text so api calls don't have to be repeated
 
 collection = mongodb.get_mongodb_collection('uploads')
 
+CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}}, supports_credentials=True) # change later
+app.config['CORS_HEADERS'] = 'Content-Type'
+app.config['SESSION_COOKIE_NAME'] = 'authToken'
+app.config['SESSION_COOKIE_HTTPONLY'] = False
+app.config['SESSION_COOKIE_SECURE'] = True
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=1)
+app.config['SESSION_COOKIE_SAMESITE'] = 'None'  # 'Strict', 'Lax', or 'None'
 
-CORS(app, supports_credentials=True, origins="http://localhost:5173") # change later
+
 # API Key
 app.secret_key = os.environ.get('SECRET_KEY', 'default_key_for_development')
-# route for homepage. Get rid of this later. Will not need this
+
+# MySQL database configuration
+db_host = "localhost"
+db_user = "super"
+db_password = os.environ.get("SQL_PASS")
+db_name = "schemo"
+
+# Create database connection
+db_connection = create_connection(db_host, db_user, db_password, db_name)
+
 @app.route('/')
-def group_names():
+def home():
     return jsonify(
         {
             "group_members": [
@@ -179,5 +197,63 @@ def delete_document(title):
         os.remove(simplified_filesystem_path)
     return jsonify({"message": "Document deleted successfully", "title": title}), 200
     
+
+def _build_cors_preflight_response():
+    response = make_response()
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    response.headers.add("Access-Control-Allow-Headers", "*")
+    response.headers.add("Access-Control-Allow-Methods", "*")
+    return response
+
+def _corsify_actual_response(response):
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    return response
+
+@app.route('/create-account', methods=['POST', 'OPTIONS'])
+@cross_origin(methods=['POST'], supports_credentials=True, headers=['Content-Type', 'Authorization'])
+def create_account():
+    data = request.get_json()
+    username = data['username']
+    password = data['password']
+    result = add_user(db_connection, username, password)
+    if result == "duplicate":
+        return jsonify({'status': 'Account already exists'}), 409
+    elif result:
+        return jsonify({'status': 'Account created successfully', 'user_id': result}), 201
+    else:
+        return jsonify({'status': 'Failed to create account'}), 500
+
+@app.route('/login', methods=['POST'])
+@cross_origin(methods=['POST'], supports_credentials=True, headers=['Content-Type', 'Authorization'])
+def login():
+    data = request.get_json()
+    username = data['username']
+    password = data['password']
+    if check_user_credentials(db_connection, username, password):
+        resp = make_response(jsonify({'status': 'Login successful'}), 200)
+        session['user_id'] = username  
+        session.permanent = True
+        return resp
+    else:
+        return jsonify({'status': 'Invalid username or password'}), 401
+
+@app.route('/is_logged_in', methods=['GET'])
+@cross_origin(methods=['GET'], supports_credentials=True, headers=['Content-Type', 'Authorization'])
+def is_logged_in():
+    if 'user_id' in session:
+        return jsonify({'logged_in': True, 'user_id': session['user_id']}), 200
+    else:
+        return jsonify({'logged_in': False}), 401
+
+@app.route('/logout', methods=['POST'])
+@cross_origin(methods=['POST'], supports_credentials=True, headers=['Content-Type', 'Authorization'])
+def logout():
+    print("Logout Called!")
+    session.permanent = False
+    session.pop('user_id', None)
+    response = jsonify({'status': 'Logged out successfully'})
+    return response, 200
+
+
 if __name__ == '__main__':
-    app.run(debug=True, port=3001)  
+    app.run(debug=True, port=3001)

@@ -1,0 +1,10 @@
+flask
+PyPDF2
+openai
+python-dotenv
+reportlab
+pdfminer
+pdfminer.six
+flask_cors
+mysql-connector-python
+bcrypt
