@@ -43,9 +43,9 @@ MONGO_DB_PASSWORD = <password>
 ```
 npm install vite --save-dev
 ```
-3. Install all `npm` dependencies by checking out [this file](client/npm-packages.txt). `npm` doesn't provide a mass install form like `pip`, sorry about that. To install the packages, simply run 
+3. Install all `npm` dependencies by running
 ```
-npm install <package>
+npm install axios emoji-dictionary eslint-plugin-react-hooks eslint-plugin-react-refresh eslint-plugin-react eslint framer-motion js-cookie jspdf pdfjs-dist react-dom react-pdf react-router-dom react-zoom-pan-pinch react vite
 ```
 
 4. Run the front end with
