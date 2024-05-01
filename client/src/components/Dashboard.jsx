@@ -20,7 +20,7 @@ function Dashboard() {
   // delete Document from list of books and fetch updated list
   const deleteDocument = async (title) => {
     try {
-        const response = await axios.delete(`http://localhost:3001/delete-document/${encodeURIComponent(title)}`);
+        const response = await axios.delete(`http://127.0.0.1:3001/delete-document/${encodeURIComponent(title)}`);
         console.log(response.data);
         alert('Document deleted successfully!');
         await fetchFiles();  
@@ -54,7 +54,7 @@ function Dashboard() {
   // retrieve list of files
   const fetchFiles = async () => {
     try {
-      const response = await axios.get('http://localhost:3001/get-files');
+      const response = await axios.get('http://127.0.0.1:3001/get-files');
       console.log(response.data);
       setFileDict({ ...response.data });
     } catch (error) {
@@ -76,7 +76,7 @@ function Dashboard() {
     // First, upload the file and update metadata
     try {
         const uploadResponse = await axios.post(
-            'http://localhost:3001/upload-files', 
+            'http://127.0.0.1:3001/upload-files', 
             formData,
             { headers: { 'Content-Type': 'multipart/form-data' } }
         );
@@ -87,7 +87,7 @@ function Dashboard() {
           closePopup(); 
           fetchFiles();
             const processResponse = await axios.post(
-                'http://localhost:3001/process-pdf', 
+                'http://127.0.0.1:3001/process-pdf', 
                 { filename: uploadResponse.data.filename, title: title }
             );
             console.log(processResponse.data);

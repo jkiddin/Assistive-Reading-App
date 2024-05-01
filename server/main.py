@@ -17,7 +17,7 @@ simplified_cache = {} # this will hold simplified text so api calls don't have t
 
 collection = mongodb.get_mongodb_collection('uploads')
 
-CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}}, supports_credentials=True) # change later
+CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}}, supports_credentials=True)
 app.config['CORS_HEADERS'] = 'Content-Type'
 app.config['SESSION_COOKIE_NAME'] = 'authToken'
 app.config['SESSION_COOKIE_HTTPONLY'] = False
@@ -50,18 +50,18 @@ def home():
     )
 PDF_STORAGE_FOLDER = './database'
 
-# This route updates uploads PDF to fileystem and updates metadata in MongoDB
+# This route updates uploads PDF to filesystem and updates metadata in Atlas
 @app.route('/upload-files', methods=['POST'])
 def upload_file():
     if 'file' not in request.files:
         return jsonify({'status': 'No file part'})
     file = request.files['file']
-    title = request.form.get('title')  
+    title = request.form.get('title')
     if file.filename == '':
         return jsonify({'status': 'No selected file'})
     if file:
         
-        # Should store original PDF in database here.
+        # Metadata
         filename = secure_filename(file.filename)
         file_path = os.path.abspath(os.path.join(PDF_STORAGE_FOLDER, filename))
         file.save(file_path)
@@ -69,7 +69,8 @@ def upload_file():
         filedata['title'] = title
         filedata['progress'] = 1
         filedata['filename'] = filename
-        filedata['uploaded_by'] = 'Anonymous'
+        user_id = session.get('user_id')
+        filedata['uploaded_by'] = user_id
         filedata['uploaded_timestamp'] = datetime.datetime.now(tz=datetime.timezone.utc).strftime('%Y-%m-%d T%H:%M:%S')
         filedata['filesystem_path'] = file_path
         collection.insert_one(filedata)
@@ -93,23 +94,17 @@ def process_pdf():
 def update_progress(title):
     
     page_number = request.json.get('page_number')
-  
-    doc = collection.find_one_and_update({'title' : title}, {'$set':{'progress' : page_number}})
+    user_id = session.get('user_id')
+
+    doc = collection.find_one_and_update({'title' : title, 'uploaded_by' : user_id}, {'$set':{'progress' : page_number}})
     return jsonify({"message": "Progress updated successfully"}), 200
 
 # GET route to retrieve list of titles to display in dashboard
 @app.route('/get-files', methods=['GET'])
 def get_files():
     # Get metadata for all uploads from MongoDB
-    user = 'Anonymous'
-    # TODO
-    # Once user logic is built out
-    # we need to filter list of files we pull by the user making
-    # the request
-    # If the user information is in a cookie (for example) - then we can get the
-    # user name from the session - something like:
-    # user = session['user_id']
-    uploads = list(collection.find({}))
+    user_id = session.get('user_id')
+    uploads = list(collection.find({'uploaded_by': user_id}))  
     filtered_metadata = {}
     for upload in uploads:
         filtered_metadata[upload['title']] = { 'filename': upload['filename'] }
@@ -119,8 +114,9 @@ def get_files():
 # GET Route that retrieves the original pdf
 @app.route('/pdf/<title>', methods=['GET'])
 def get_pdf_by_title(title):
+    user_id = session.get('user_id')
     # Match the ID of the title with the database file table to retrieve the file and send it to frontend.
-    doc = collection.find_one({'title': title})
+    doc = collection.find_one({'title': title, 'uploaded_by' : user_id})
     if not doc:
         return jsonify({'error': 'Title not found'}), 404
     filename = doc['filename']
@@ -136,7 +132,8 @@ def get_pdf_by_title(title):
 # GET Route that simplifies each page of PDF
 @app.route('/pdf/<title>/<int:page>', methods=['GET'])
 def get_simplified_pdf_page(title, page):
-    doc = collection.find_one({'title':title})
+    user_id = session.get('user_id')
+    doc = collection.find_one({'title':title, 'uploaded_by' : user_id})
     filename = doc['filename']
     filesystem_path = doc['filesystem_path']
     if not filename:
@@ -156,10 +153,10 @@ def get_simplified_pdf_page(title, page):
         except Exception as e:
             return jsonify({"error": str(e)}), 500
     else:
-         # Retrieve original PDF file from database file table
+        
         extracted_text = extract_text(filesystem_path, page_numbers=[page-1])
         simplified_text = simplify_text(extracted_text)
-        # simplified_cache[title][page-1] = simplified_text // need to check if title exists first
+      
         single_newline_fixed_text = simplified_text.replace('\n', ' ')
         paragraphs = single_newline_fixed_text.split('  ')  
         return jsonify(paragraphs)
@@ -167,9 +164,9 @@ def get_simplified_pdf_page(title, page):
 # GET route that retrieves the progress so reader can pick up where they left off
 @app.route('/get-progress/<title>', methods=['GET'])
 def get_progress(title):
+    user_id = session.get('user_id')
     
-    # SELECT statement to retrieve progress based on title from database table here
-    doc = collection.find_one({'title':title})
+    doc = collection.find_one({'title':title, 'uploaded_by' : user_id})
     progress = doc['progress']
     if not progress:
         return jsonify({"error": "Progress not found for the specified title"}), 404
@@ -178,7 +175,8 @@ def get_progress(title):
 # DELETE route to remove document from dashboard
 @app.route('/delete-document/<title>', methods=['DELETE'])
 def delete_document(title):
-    doc = collection.find_one({'title':title})
+    user_id = session.get('user_id')
+    doc = collection.find_one({'title':title, 'uploaded_by' : user_id})
     filename = doc['filename']
     filesystem_path = doc['filesystem_path']
     if doc:
@@ -230,8 +228,8 @@ def login():
     password = data['password']
     if check_user_credentials(db_connection, username, password):
         resp = make_response(jsonify({'status': 'Login successful'}), 200)
-        session['user_id'] = username  
         session.permanent = True
+        session['user_id'] = username
         return resp
     else:
         return jsonify({'status': 'Invalid username or password'}), 401

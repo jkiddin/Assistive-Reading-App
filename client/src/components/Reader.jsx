@@ -110,7 +110,7 @@ function Reader() {
     useEffect(() => {
         const loadProgress = async () => {
             try {
-                const response = await axios.get(`http://localhost:3001/get-progress/${encodeURIComponent(title)}`);
+                const response = await axios.get(`http://127.0.0.1:3001/get-progress/${encodeURIComponent(title)}`);
                 setPageNumber(response.data.progress || 1);
                 setIsLoaded(true);
             } catch (error) {
@@ -128,7 +128,7 @@ function Reader() {
         if (isLoaded) { 
             const saveProgress = async () => {
                 try {
-                    await axios.post(`http://localhost:3001/update-progress/${encodeURIComponent(title)}`, {
+                    await axios.post(`http://127.0.0.1:3001/update-progress/${encodeURIComponent(title)}`, {
                         page_number: pageNumber
                     });
                 } catch (error) {
