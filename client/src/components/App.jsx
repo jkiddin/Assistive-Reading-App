@@ -105,20 +105,30 @@ function App() {
           <h2>Thanks for using our app.</h2>
           <h2>Go ahead and click Dashboard to begin your journey.</h2>
           </>
-        ) : ( 
+        ) : ( <>
           <h1>Assistive Reading App</h1> 
+          </>
         )}
         <div>
         </div>
       </motion.div>
-      <h2 className='GroupMem'>Group Members</h2>
-          <ol>
-            {members.map((member, index) => (
-              <li key={index}>{member}</li>
-            ))}
-          </ol>
+      {loggedIn ? <></> : ( <>
+        <h2 className='appe'>Hey, thanks for checking out our app!</h2>
+        <h2>Please create an account for access.</h2>
+        </>
+        )}
     </>
     </div>
+    <div className='footer'>
+  <p>
+    {members.map((member, index) => (
+    <span key={index}>
+      {member}
+      {index !== members.length - 1 && " | "}
+    </span>
+    ))}
+  </p>
+</div>
     </motion.body>
   );
 }

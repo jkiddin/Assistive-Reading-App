@@ -33,6 +33,18 @@ input[type="password"] {
     margin-top: 5px;
 }
 
+@media (prefers-color-scheme: light) {
+    input[type="text"],
+    input[type="password"] {
+      background-color: #1f2023;
+      color: #dadada;
+      border-color: #1f2023;
+    }
+    .button {
+        background-color: #1a1a1a;
+    }
+  }
+
 button {
     padding: 10px;
     background-color: #007BFF;

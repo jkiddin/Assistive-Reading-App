@@ -1,7 +1,3 @@
-"": "react-pdf/renderer",
-"": "types/react-dom",
-"": "types/react",
-"": "vitejs/plugin-react",
 "axios": "1.6.8",
 "emoji-dictionary": "1.0.11",
 "eslint-plugin-react-hooks": "4.6.0",

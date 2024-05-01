@@ -111,6 +111,20 @@ body {
   gap: 10px;
 }
 
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  width: 100%;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 0;
+  flex: 0 1 auto;
+}
+
 
 .header a, .logout-button {
   color: #ddd;
@@ -156,7 +170,7 @@ body {
   transition: 0.3s;
 }
 
-.GroupMem {
+.appe {
   padding-top: 20px;
 }
 
