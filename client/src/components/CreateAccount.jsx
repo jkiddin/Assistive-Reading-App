@@ -10,8 +10,21 @@ export default function CreateAccount() {
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
 
+    const validatePassword = (password) => {
+        const minLength = 8;
+        const hasUppercase = /[A-Z]/.test(password);
+        const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+        return password.length >= minLength && hasUppercase && hasSpecialChar;
+    };
+
     const handleCreateAccount = async (event) => {
         event.preventDefault();
+        if (!validatePassword(password)) {
+            setError('Password must be at least 8 characters long, include an uppercase letter, and a special character.');
+            return;
+        }
+
         try {
             const response = await axios.post('http://127.0.0.1:3001/create-account', { username, password });
             if (response.status === 201) {
@@ -21,15 +34,12 @@ export default function CreateAccount() {
                 setError('');
             }
         } catch (error) {
-            if (error.response.status === 409) {
-              setError('Account already exists.')
-              setSuccess('');
-            } else if (error.response.status === 500) {
-              setError('Failed to create account. Please try again.');
-              setSuccess(''); 
+            if (error.response && error.response.status === 409) {
+                setError('Account already exists.');
+            } else if (error.response && error.response.status === 500) {
+                setError('Failed to create account. Please try again.');
             } else {
-              setError('Failed to connect to the server.');
-              setSuccess('');
+                setError('Failed to connect to the server.');
             }
             console.log(error);
         }

@@ -53,7 +53,7 @@ body {
 
 .account-links {
   display: flex;
-  justify-content: space-evenly;
+  justify-content: center;
   align-items: center;
   flex: 1;
 }
@@ -150,7 +150,18 @@ body {
 .PFP {
   height: 40px;
   padding: 10px;
+  padding-right: 40px;
   transition: transform 0.2s;
+}
+
+.PFP-container {
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: flex-end;
+}
+
+.underPFP {
+  background-color: 0;
 }
 
 .logo:hover {
@@ -172,6 +183,9 @@ body {
 
 .appe {
   padding-top: 20px;
+  width: 600px;
+  align-self: center;
+
 }
 
 ol {
@@ -221,10 +235,12 @@ button:hover {
     padding: 20px 10px;
   }
 
+  /*
   .home-links, .logo-container, .account-links, .PFP-container {
     width: 100%;
     justify-content: center;
   }
+  */
 
   .header a, .logout-button {
     margin-top: 10px;

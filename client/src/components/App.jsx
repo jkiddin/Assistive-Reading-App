@@ -72,7 +72,7 @@ function App() {
       <div className="home-links">
       {loggedIn ? 
           <Link to="/dashboard" className="dashboard-button">Dashboard</Link> :
-          <span className="dashboard-button-disabled">Login to Access</span>
+          <span className="dashboard-button-disabled"></span>
           }
       </div>
       <div className="logo-container">
@@ -83,13 +83,14 @@ function App() {
           <>
             <div className="PFP-container">
               <img src={pfp} alt="Profile" className="PFP"/>
+              <p className='underPFP'>{username}</p>
             </div>
             <button className="logout-button" onClick={handleLogout}>Sign Out</button>
           </>
         ) : (
           <>
             <Link to="/login" className="login-button">Login</Link>
-            <Link to="/create-account" className="create-button">New Here?</Link>
+            <Link to="/create-account" className="create-button">Sign Up</Link>
           </>
         )}
       </div>
@@ -113,7 +114,12 @@ function App() {
         </div>
       </motion.div>
       {loggedIn ? <></> : ( <>
-        <h2 className='appe'>Hey, thanks for checking out our app!</h2>
+        <h3 className='appe'>The application leverages artificial intelligence to 
+        simplify complex texts into clear, easily understandable sentences, 
+        enhancing readability for users. It accepts documents, 
+        processes them to reduce linguistic complexity, and outputs simplified versions. 
+        All documents are securely stored in the cloud, ensuring easy access and management for users. 
+        </h3>
         <h2>Please create an account for access.</h2>
         </>
         )}
