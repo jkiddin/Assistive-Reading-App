@@ -275,7 +275,7 @@ def send_reset_email():
         message.attach(MIMEText(body, 'plain'))
 
         try:
-            server = smtplib.SMTP('smtp.gmail.com', 587)
+            server = smtplib.SMTP(os.environ['SMTP-server'], 587)
             server.ehlo()
             server.starttls()
             server.login(os.environ['SMTP-login'], os.environ['SMTP-password'])

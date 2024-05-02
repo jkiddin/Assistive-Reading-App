@@ -24,16 +24,22 @@ pip install -r requirements.txt
 * Create collection "uploads"
 * Ensure your IP address is added to Network Access List (Security > Network Access > IP Access List)
 
-5. Configure a .env file with your keys in the `/server` folder with your keys.
+5. Setup an SMTP server to handle your OTP needs. Your current email provider probably has this service for free; look at their documentation on how to properly configure it.
+
+6. Configure a .env file with your keys in the `/server` folder with your keys.
 
 ```
 OPENAI_API_KEY = <openai_api_key> 
 SQL_PASS = <password>
 MONGO_DB_USER = <user> 
 MONGO_DB_PASSWORD = <password> 
+SMTP-server = <server>
+SMTP-login = <username>
+SMTP-password = <password>
+SMTP-email = <email>
 ```
 
-6. Run the server with `python3 main.py`.
+7. Run the server with `python3 main.py`.
 
 ### With the backend up and running, set up the frontend:
 
