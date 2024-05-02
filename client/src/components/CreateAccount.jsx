@@ -12,7 +12,7 @@ export default function CreateAccount() {
     const [success, setSuccess] = useState('');
 
     const validatePassword = (password) => {
-        const minLength = 8;
+        const minLength = 10;
         const hasUppercase = /[A-Z]/.test(password);
         const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
 
@@ -28,7 +28,7 @@ export default function CreateAccount() {
         event.preventDefault();
 
         if (!validatePassword(password)) {
-          setError('Password must be at least 8 characters long, include an uppercase letter, and a special character.');
+          setError('Password must be at least 10 characters long, include an uppercase letter, and a special character.');
           return;
         }
         if (!validateEmail(email)) {
