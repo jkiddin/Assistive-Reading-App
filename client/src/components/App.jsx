@@ -114,11 +114,13 @@ function App() {
         </div>
       </motion.div>
       {loggedIn ? <></> : ( <>
-        <h3 className='appe'>The application leverages artificial intelligence to 
-        simplify complex texts into clear, easily understandable sentences, 
-        enhancing readability for users. It accepts documents, 
-        processes them to reduce linguistic complexity, and outputs simplified versions. 
-        All documents are securely stored in the cloud, ensuring easy access and management for users. 
+        <h3 className='appe'>This application leverages the power of 
+        artificial intelligence to simplify complex texts into succinct, 
+        comprehensible sentences, thereby improving readability for our users. 
+        By accepting documents and seamlessly processing them to reduce linguistic 
+        complexity, we present simplified versions alongside the original text in a 
+        convenient page-by-page viewer. All documents are securely stored in the cloud, 
+        ensuring easy access and file management for our users. 
         </h3>
         <h2>Please create an account for access.</h2>
         </>
