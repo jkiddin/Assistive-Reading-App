@@ -257,14 +257,13 @@ def logout():
 @app.route('/send-reset-email', methods=['POST'])
 @cross_origin(methods=['POST'], supports_credentials=True, headers=['Content-Type', 'Authorization'])
 def send_reset_email():
-    print("email called")
+    print("Email Called!")
     data = request.get_json()
     email = data['email']
     if email_exists(db_connection, email):
-        print("user exists")
-        otp = ''.join([str(random.randint(0, 9)) for _ in range(6)])  # Generate a 6-digit OTP
-        print(otp)
-        otp_store[email] = otp  # Store OTP with the email as key
+        print("Email: User Exists!")
+        otp = ''.join([str(random.randint(0, 9)) for _ in range(6)])
+        otp_store[email] = otp
 
         message = MIMEMultipart()
         message['From'] = os.environ['SMTP-email']
@@ -281,12 +280,13 @@ def send_reset_email():
             server.login(os.environ['SMTP-login'], os.environ['SMTP-password'])
             server.sendmail(os.environ['SMTP-email'], email, message.as_string())
             server.quit()
+            print("Email sent!")
             return jsonify({'status': 'Email sent'}), 200
         except smtplib.SMTPException as e:
             print(e)
             return jsonify({'status': 'Failed to send email', 'error': str(e)}), 500
     else:
-        print("user does not exist. no email sent.")
+        print("Email: User does not exist. No email sent.")
         return jsonify({'status': 'Failed to send email'}), 500
     
 @app.route('/verify-otp', methods=['POST'])
@@ -303,18 +303,16 @@ def verify_otp():
 @app.route('/update-password', methods=['POST'])
 @cross_origin(methods=['POST'], supports_credentials=True, headers=['Content-Type', 'Authorization'])
 def update_password():
-    print(otp_store)
     data = request.get_json()
     email = data['email']
     new_password = data['newPassword']
 
-    # Update password in the database
     if update_user_password(db_connection, email, new_password):
         unlock(db_connection, email)
+        otp_store.pop(email, None)
         return jsonify({'status': 'Password updated successfully'}), 200
     else:
         return jsonify({'status': 'Failed to update password'}), 500
-
 
 if __name__ == '__main__':
     app.run(debug=True, port=3001)

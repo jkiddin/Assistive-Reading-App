@@ -39,7 +39,6 @@ export default function ResetPasswordWithOTP() {
         try {
             const verifyResponse = await axios.post('http://127.0.0.1:3001/verify-otp', { email, otp });
             if (verifyResponse.status === 200) {
-                // Here we assume there's an endpoint to update the password
                 const updateResponse = await axios.post('http://127.0.0.1:3001/update-password', { email, newPassword });
                 if (updateResponse.status === 200) {
                     setMessage('Password has been reset successfully.');
