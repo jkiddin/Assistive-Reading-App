@@ -66,3 +66,16 @@ button:hover {
 .success-message {
     color: green;
 }
+
+.loginButton {
+    margin-bottom: 20px;
+}
+
+.resetButton {
+    margin-top: 20px;
+    margin-bottom: 0;
+}
+
+.buttonResetPassword {
+    margin-top: 20px;
+}

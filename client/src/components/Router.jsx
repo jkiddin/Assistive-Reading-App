@@ -6,6 +6,8 @@ import Reader from './Reader';
 import Login from './Login';
 import CreateAccount from './CreateAccount';
 import ProtectedRoute from './ProtectedRoute';
+import ResetPassword from './resetPassword';
+import ResetPasswordWithOTP from './resetPasswordOTP';
 
 const Router = () => {
     const router = createBrowserRouter([
@@ -30,7 +32,16 @@ const Router = () => {
         {
             path: "create-account",
             element: <CreateAccount></CreateAccount>
+        },
+        {
+            path: "reset-password",
+            element: <ResetPassword></ResetPassword>
+        },
+        {
+            path: "reset-password-verify",
+            element: <ResetPasswordWithOTP></ResetPasswordWithOTP>
         }
+
     ]);
     return <RouterProvider 
     router = {router} 

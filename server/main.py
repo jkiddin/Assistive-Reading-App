@@ -6,8 +6,12 @@ import datetime
 import json
 import os
 import mongodb
+import random
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 from simplification import simplify_pdf, simplify_text
-from sql import create_connection, check_user_credentials, add_user
+from sql import create_connection, check_user_credentials, add_user, update_user_password, email_exists, user_exists, lockout, unlock, retrieve_attempts, add_attempt, reset_attempts
 from functools import wraps
 from pdfminer.high_level import extract_text
 from datetime import timedelta
@@ -36,6 +40,8 @@ db_name = "schemo"
 
 # Create database connection
 db_connection = create_connection(db_host, db_user, db_password, db_name)
+
+otp_store = {}
 
 @app.route('/')
 def home():
@@ -193,18 +199,6 @@ def delete_document(title):
     if os.path.exists(simplified_filesystem_path):
         os.remove(simplified_filesystem_path)
     return jsonify({"message": "Document deleted successfully", "title": title}), 200
-    
-
-def _build_cors_preflight_response():
-    response = make_response()
-    response.headers.add("Access-Control-Allow-Origin", "*")
-    response.headers.add("Access-Control-Allow-Headers", "*")
-    response.headers.add("Access-Control-Allow-Methods", "*")
-    return response
-
-def _corsify_actual_response(response):
-    response.headers.add("Access-Control-Allow-Origin", "*")
-    return response
 
 @app.route('/create-account', methods=['POST', 'OPTIONS'])
 @cross_origin(methods=['POST'], supports_credentials=True, headers=['Content-Type', 'Authorization'])
@@ -212,7 +206,8 @@ def create_account():
     data = request.get_json()
     username = data['username']
     password = data['password']
-    result = add_user(db_connection, username, password)
+    email = data['email']
+    result = add_user(db_connection, username, password, email)
     if result == "duplicate":
         return jsonify({'status': 'Account already exists'}), 409
     elif result:
@@ -230,7 +225,15 @@ def login():
         resp = make_response(jsonify({'status': 'Login successful'}), 200)
         session.permanent = True
         session['user_id'] = username
+        reset_attempts(db_connection, username)
         return resp
+    elif (user_exists(db_connection, username)):
+        if (retrieve_attempts(db_connection, username) >= 5):
+            lockout(db_connection, username)
+            return jsonify({'status': 'User locked out'}), 423
+        else:
+            add_attempt(db_connection, username)
+            return jsonify({'status': 'Invalid username or password'}), 401
     else:
         return jsonify({'status': 'Invalid username or password'}), 401
 
@@ -250,6 +253,67 @@ def logout():
     session.pop('user_id', None)
     response = jsonify({'status': 'Logged out successfully'})
     return response, 200
+
+@app.route('/send-reset-email', methods=['POST'])
+@cross_origin(methods=['POST'], supports_credentials=True, headers=['Content-Type', 'Authorization'])
+def send_reset_email():
+    print("email called")
+    data = request.get_json()
+    email = data['email']
+    if email_exists(db_connection, email):
+        print("user exists")
+        otp = ''.join([str(random.randint(0, 9)) for _ in range(6)])  # Generate a 6-digit OTP
+        print(otp)
+        otp_store[email] = otp  # Store OTP with the email as key
+
+        message = MIMEMultipart()
+        message['From'] = os.environ['SMTP-email']
+        message['To'] = email
+        message['Subject'] = 'Password Reset OTP'
+        
+        body = f"Your OTP is: {otp}. Head to http://127.0.0.1:5173/reset-password-verify to reset it."
+        message.attach(MIMEText(body, 'plain'))
+
+        try:
+            server = smtplib.SMTP('smtp.gmail.com', 587)
+            server.ehlo()
+            server.starttls()
+            server.login(os.environ['SMTP-login'], os.environ['SMTP-password'])
+            server.sendmail(os.environ['SMTP-email'], email, message.as_string())
+            server.quit()
+            return jsonify({'status': 'Email sent'}), 200
+        except smtplib.SMTPException as e:
+            print(e)
+            return jsonify({'status': 'Failed to send email', 'error': str(e)}), 500
+    else:
+        print("user does not exist. no email sent.")
+        return jsonify({'status': 'Failed to send email'}), 500
+    
+@app.route('/verify-otp', methods=['POST'])
+@cross_origin(methods=['POST'], supports_credentials=True, headers=['Content-Type', 'Authorization'])
+def verify_otp():
+    data = request.get_json()
+    email = data['email']
+    user_otp = data['otp']
+    if otp_store.get(email) == user_otp:
+        return jsonify({'status': 'OTP verified'}), 200
+    else:
+        return jsonify({'status': 'Invalid OTP'}), 401
+
+@app.route('/update-password', methods=['POST'])
+@cross_origin(methods=['POST'], supports_credentials=True, headers=['Content-Type', 'Authorization'])
+def update_password():
+    print(otp_store)
+    data = request.get_json()
+    email = data['email']
+    new_password = data['newPassword']
+
+    # Update password in the database
+    if update_user_password(db_connection, email, new_password):
+        unlock(db_connection, email)
+        return jsonify({'status': 'Password updated successfully'}), 200
+    else:
+        return jsonify({'status': 'Failed to update password'}), 500
 
 
 if __name__ == '__main__':
