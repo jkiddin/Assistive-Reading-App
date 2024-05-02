@@ -70,6 +70,18 @@
     border-radius: 4px;
 }
 
+.dash-holder {
+    display: flex;
+    flex-direction: column;
+}
+
+.dash-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
 .document-title {
     width: calc(100% - 280px);
 }

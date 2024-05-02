@@ -36,7 +36,7 @@ function Dashboard() {
   }, []);
 
   const showUploadPopup = () => {
-    setShowPopup(true);
+    setShowPopup(!showPopup);
   };
 
   const closePopup = () => {
@@ -125,9 +125,9 @@ function Dashboard() {
         </div>
         </div>
       )}
-      <div style={{ marginTop: '20px' }}>
+      <div className='dash-holder' style={{ marginTop: '20px' }}>
         {Object.entries(fileDict).map(([title, fileName], index) => (
-          <div key={index} style={{ /* styling code */ }}>
+          <div className='dash-row' key={index} style={{ /* styling code */ }}>
             <span>{title}</span>
             <button 
               onClick={() => handleReadDocument(title)}
