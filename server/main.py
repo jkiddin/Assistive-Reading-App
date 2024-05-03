@@ -1,9 +1,8 @@
-from flask import Flask, jsonify, request, make_response, session, Response
+from flask import Flask, jsonify, request, make_response, session
 from flask import send_from_directory
 from flask_cors import CORS, cross_origin
 from werkzeug.utils import safe_join, secure_filename
 import datetime
-import json
 import os
 import mongodb
 import random
@@ -12,7 +11,6 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from simplification import simplify_pdf, simplify_text
 from sql import create_connection, check_user_credentials, add_user, update_user_password, email_exists, user_exists, lockout, unlock, retrieve_attempts, add_attempt, reset_attempts
-from functools import wraps
 from pdfminer.high_level import extract_text
 from datetime import timedelta
 
@@ -298,7 +296,7 @@ def verify_otp():
     if otp_store.get(email) == user_otp:
         return jsonify({'status': 'OTP verified'}), 200
     else:
-        return jsonify({'status': 'Invalid OTP'}), 401
+        return jsonify({'status': 'Invalid OTP'}), 511
 
 @app.route('/update-password', methods=['POST'])
 @cross_origin(methods=['POST'], supports_credentials=True, headers=['Content-Type', 'Authorization'])

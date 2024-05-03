@@ -45,11 +45,13 @@ export default function ResetPasswordWithOTP() {
                 } else {
                     setMessage('Failed to reset password.');
                 }
-            } else {
-                setMessage('Invalid OTP. Please try again.');
             }
         } catch (error) {
             setMessage('Error processing your request.');
+
+            if (error.response.status === 511) {
+            setMessage('Invalid OTP. Please try again.');
+            }
         }
     };
 
