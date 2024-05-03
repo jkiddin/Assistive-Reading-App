@@ -47,10 +47,10 @@ export default function ResetPasswordWithOTP() {
                 }
             }
         } catch (error) {
-            setMessage('Error processing your request.');
-
             if (error.response.status === 511) {
             setMessage('Invalid OTP. Please try again.');
+            } else {
+                setMessage('Error processing your request.');
             }
         }
     };
