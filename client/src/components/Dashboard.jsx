@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios'; 
+import '../styles/Dashboard.css'
+import { motion } from 'framer-motion'
 
 function Dashboard() {
   const [showPopup, setShowPopup] = useState(false); // whether to display popup to add file
@@ -18,7 +20,7 @@ function Dashboard() {
   // delete Document from list of books and fetch updated list
   const deleteDocument = async (title) => {
     try {
-        const response = await axios.delete(`http://localhost:3001/delete-document/${encodeURIComponent(title)}`);
+        const response = await axios.delete(`http://127.0.0.1:3001/delete-document/${encodeURIComponent(title)}`);
         console.log(response.data);
         alert('Document deleted successfully!');
         await fetchFiles();  
@@ -34,7 +36,7 @@ function Dashboard() {
   }, []);
 
   const showUploadPopup = () => {
-    setShowPopup(true);
+    setShowPopup(!showPopup);
   };
 
   const closePopup = () => {
@@ -52,7 +54,7 @@ function Dashboard() {
   // retrieve list of files
   const fetchFiles = async () => {
     try {
-      const response = await axios.get('http://localhost:3001/get-files');
+      const response = await axios.get('http://127.0.0.1:3001/get-files');
       console.log(response.data);
       setFileDict({ ...response.data });
     } catch (error) {
@@ -74,7 +76,7 @@ function Dashboard() {
     // First, upload the file and update metadata
     try {
         const uploadResponse = await axios.post(
-            'http://localhost:3001/upload-files', 
+            'http://127.0.0.1:3001/upload-files', 
             formData,
             { headers: { 'Content-Type': 'multipart/form-data' } }
         );
@@ -85,7 +87,7 @@ function Dashboard() {
           closePopup(); 
           fetchFiles();
             const processResponse = await axios.post(
-                'http://localhost:3001/process-pdf', 
+                'http://127.0.0.1:3001/process-pdf', 
                 { filename: uploadResponse.data.filename, title: title }
             );
             console.log(processResponse.data);
@@ -97,25 +99,21 @@ function Dashboard() {
   
 // display Links to other pages, upload document method, and list of documents for the user
   return (
-    <div>
-      <div className="header" style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-evenly',
-            marginTop: '-300px',           // Reduces top margin
-            marginBottom: '10px',     
-            backgroundColor: '#f5f5f5', // Light gray background
-            padding: '5px 0',        
-            width: '100%',            
-            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-        }}>
+    <motion.div className='content'
+    initial={{opacity: 0}}
+    animate={{opacity: 1}}
+    transition={{ duration: 0.5, ease: 'easeIn' }}
+    >
+      <div className="header">
           <Link to="/" className="home-button">App</Link>
       </div>
       <button onClick={showUploadPopup}>Upload Document</button>
       {showPopup && (
+        <div className='upload-container'>
         <div className="upload-popup">
-          <h2>Title of Document</h2>
+          <h2 className='titleD'>Title of Document</h2>
           <input
+            className='document-title'
             type="text"
             placeholder="Enter title"
             value={title}
@@ -125,10 +123,11 @@ function Dashboard() {
           <button onClick={handleSubmit}>Submit</button> 
           <button onClick={closePopup}>Close</button>
         </div>
+        </div>
       )}
-      <div style={{ marginTop: '20px' }}>
+      <div className='dash-holder' style={{ marginTop: '20px' }}>
         {Object.entries(fileDict).map(([title, fileName], index) => (
-          <div key={index} style={{ /* styling code */ }}>
+          <div className='dash-row' key={index} style={{ /* styling code */ }}>
             <span>{title}</span>
             <button 
               onClick={() => handleReadDocument(title)}
@@ -145,7 +144,7 @@ function Dashboard() {
           </div>
         ))}
       </div>
-    </div>
+    </motion.div>
   );
 }
 

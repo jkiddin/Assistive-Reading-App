@@ -1,0 +1,81 @@
+.account-container {
+    width: 300px;
+    margin: auto;
+    padding: 20px;
+    border-radius: 5px;
+    background-color: #2b2b2b;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.content {
+    margin-top: 18vh; 
+    padding-top: 0;
+  }
+
+.home-link {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+}
+
+.account-form {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    margin-bottom: 10px;
+}
+
+input[type="text"],
+input[type="password"] {
+    width: calc(100% - 10px);
+    padding: 5px;
+    margin-top: 5px;
+}
+
+@media (prefers-color-scheme: light) {
+    input[type="text"],
+    input[type="password"] {
+      background-color: #1f2023;
+      color: #dadada;
+      border-color: #1f2023;
+    }
+    .button {
+        background-color: #1a1a1a;
+    }
+  }
+
+button {
+    padding: 10px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+.error-message {
+    color: red;
+}
+
+.success-message {
+    color: green;
+}
+
+.loginButton {
+    margin-bottom: 20px;
+}
+
+.resetButton {
+    margin-top: 20px;
+    margin-bottom: 0;
+}
+
+.buttonResetPassword {
+    margin-top: 20px;
+}

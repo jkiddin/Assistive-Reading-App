@@ -1,60 +1,71 @@
 # A Reading App Set up in React and Vite frontend and a Flask backend.
 
-Step 1: Clone the repository and open project in VS Code
+## After cloning the repository in your IDE enviornment, following these steps:
 
-Backend:
+### To set up the back end:
 
-Navigate to the server folder in terminal, and run these commands.
-
-Step 2: Create the virtual environment
-
+1. Create the virtual environment.
+```
 python3 -m venv venv
-
 source venv/bin/activate 
+```
 
-Step 3: Install Flask and Flask-CORS 
+2. Install all required dependencies for the server.
+```
+pip install -r requirements.txt
+```
+3. Ensure you have [MySQL](https://www.mysql.com/) up and running. Run [setup.sql](server/setup.sql) with your own chosen password. Feel free to mess around with the naming of the database and users, just ensure to change it [in the main file](server/main.py#L31-L35).
 
-pip install Flask
 
-pip install Flask-CORS
+4. To set up your [Atlas MongoDB](https://www.mongodb.com/products/platform/atlas-database) Cluster:
+* Create free account on Atlas
+* Create cluster "assistive-reading-app-cluster"
+* Create database within the cluster "assistive-reading-app-db"
+* Create collection "uploads"
+* Ensure your IP address is added to Network Access List (Security > Network Access > IP Access List)
 
-Step 4: Launch the backend server
+5. Setup an SMTP server to handle your OTP needs. Your current email provider probably has this service for free; look at their documentation on how to properly configure it.
 
-python3 main.py
+6. Configure a .env file with your keys in the `/server` folder with your keys.
 
-Front End
+```
+OPENAI_API_KEY = <openai_api_key> 
+SQL_PASS = <password>
+MONGO_DB_USER = <user> 
+MONGO_DB_PASSWORD = <password> 
+SMTP-server = <server>
+SMTP-login = <username>
+SMTP-password = <password>
+SMTP-email = <email>
+```
 
-Keep the backend server running, and open a split terminal.
-Navigate to the client folder in terminal, and run these commands.
+7. Run the server with `python3 main.py`.
 
-Step 5: Install Node (using Homebrew)
+### With the backend up and running, set up the frontend:
 
-brew install node
+1. Ensure `node` is already installed. If not, you can install it with `brew install node` or likewise applications.
 
-Step 6: Install Vite
-
+2. Install Vite with
+```
 npm install vite --save-dev
+```
+3. Install all `npm` dependencies by running
+```
+npm install axios emoji-dictionary eslint-plugin-react-hooks eslint-plugin-react-refresh eslint-plugin-react eslint framer-motion js-cookie jspdf pdfjs-dist react-dom react-pdf react-router-dom react-zoom-pan-pinch react vite
+```
 
-Step 7: Launch the frontend
-
+4. Run the front end with
+```
 npm run dev
+```
 
-Click on the given link
+If done correctly, your terminal should print something like
+```
+VITE v5.2.10  ready in 273 ms
 
-# Everything installed after
-npm install pdfjs-dist
+  ➜  Local:   http://localhost:5173/
+  ➜  Network: use --host to expose
+  ➜  press h + enter to show help 
+```
 
-npm install @react-pdf
-
-npm install react-router-dom
-pip install PyPDF2
-pip install python-dotenv
-pip install openai
-pip install reportlab
-pip install pdfminer.six
-
-# New Update!
-npm install jspdf
-
-
-The server/venv files and any node_modules files should not be committed to Github, as well as any test pdfs. Use git status to check before committing.
+Go ahead and visit the site running on port 5173.

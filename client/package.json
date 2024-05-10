@@ -12,11 +12,16 @@
   "dependencies": {
     "@react-pdf/renderer": "^3.4.2",
     "axios": "^1.6.8",
+    "emoji-dictionary": "^1.0.11",
+    "framer-motion": "^11.1.7",
+    "js-cookie": "^3.0.5",
+    "jspdf": "^2.5.1",
     "pdfjs-dist": "^4.0.379",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-pdf": "^7.7.1",
-    "react-router-dom": "^6.22.3"
+    "react-router-dom": "^6.22.3",
+    "react-zoom-pan-pinch": "^3.4.4"
   },
   "devDependencies": {
     "@types/react": "^18.2.66",
@@ -26,6 +31,6 @@
     "eslint-plugin-react": "^7.34.1",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.6",
-    "vite": "^5.2.8"
+    "vite": "^5.2.10"
   }
 }

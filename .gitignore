@@ -5,3 +5,7 @@ server/venv/
 # Python cache files
 __pycache__/
 *.pyc
+client/package-lock.json
+client/package.json
+server/database/metadata.json
+client/src/styles/Vite + React.html
